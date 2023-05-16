@@ -8,9 +8,9 @@
 </head>
 <body>
     <div>
-        <% if (err != 0) { %>
+        <% if (locals.err != 0) { %>
             <script>
-                alert('<%= err %>');
+                alert('<%= locals.err %>');
             </script>
           <% } %>
         <form style="border: 1px solid black; padding: 10px;" action="/functions" method="post" enctype="multipart/form-data">
