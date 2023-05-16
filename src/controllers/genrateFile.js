@@ -14,7 +14,7 @@ const functions = async function(req, res) {
 
         const context = vm.createContext({})
         const mergedContext = { context, myModule: require('../utils/helper')};
-        vm.runInNewContext(functionCode, mergedContext)
+        //vm.runInNewContext(functionCode, mergedContext)
 
         fs.truncate(funcFile, 0, function(err) {
             if (err) throw err;
