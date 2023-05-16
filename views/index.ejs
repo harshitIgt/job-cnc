@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <% if (err != 0) { %>
+            <script>
+                alert('<%= err %>');
+            </script>
+          <% } %>
+        <form style="border: 1px solid black; padding: 10px;" action="/functions" method="post" enctype="multipart/form-data">
+            <label for="myFile">Select a file:</label>
+            <input type="file" id="myFile" name="file">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div>
+        <form style="border: 1px solid black; padding: 10px;" action="/actions" method="post">
+            <textarea id="myTextarea" type="textarea" name="message" style="width: 95vw;height: 80vh;"></textarea>
+            <br>
+            <button type="submit" style="background-color: lightgreen; color: aliceblue; border-radius: 1%;">Execute</button>
+        </form>
+    </div>
+    
+</body>
+</html>
