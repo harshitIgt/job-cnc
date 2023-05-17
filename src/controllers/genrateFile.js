@@ -25,7 +25,7 @@ const functions = async function(req, res) {
         
         const replaceWord = ` require('./src/utils/helper')`
         let resultString = functionCode.replace('myModule', replaceWord)
-        resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset, onParameter}`
+        resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter}`
         if(file.write(resultString)){
             let err = `file uploading successfully`
             res.status(200).render('index.ejs', {err})
@@ -59,8 +59,17 @@ const actions = async function(req,res) {
             res.render('index.ejs',{err});
             return
         }
-        console.log(file)
-
+        else {
+            try{
+                let newFile =  removeLastLine(file);
+                vm.runInNewContext(newFile)
+            }catch(error){
+               err = error.message;
+               res.render('index.ejs',{err});
+               return 
+            }
+        }
+        console.log('file>>>',file)
         fs.truncate(filename, 0, function(err) {
             if (err) throw err
         })
@@ -73,8 +82,10 @@ const actions = async function(req,res) {
 
         fs.readFile(srcFile, 'utf8', (err,data)=>{
             if(err) throw err;
+            const filePath = '../../functions.js'
+            delete require.cache[require.resolve(filePath)]
             const context = {
-                myModule: require('../../functions'),
+                myModule: require(filePath),
             };
             try{
                  vm.runInNewContext(data, context)
@@ -92,5 +103,15 @@ const actions = async function(req,res) {
         res.status(400).json({error:error.message})
     }
 }
+
+function removeLastLine(string) {
+    const lines = string.split('\n');
+    if (lines.length <= 1) {
+      return '';
+    } else {
+      lines.pop();
+      return lines.join('\n');
+    }
+  }
 
 module.exports = { functions, actions }
