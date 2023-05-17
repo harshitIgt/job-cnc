@@ -15,7 +15,8 @@ app.set('views',path.join(__dirname, "views"))
 app.set('view engine', 'ejs')
 
 app.get('/', (req,res) => {
-    res.render('index.ejs')
+    let err = 0
+    res.render('index.ejs',{err})
 })
 app.use(file)
 

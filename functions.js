@@ -102,4 +102,4 @@ function onParameter(name, value){
 }
 
 //module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter }
-module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovements, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset }
+module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset, onParameter}

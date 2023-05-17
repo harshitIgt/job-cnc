@@ -25,7 +25,7 @@ const functions = async function(req, res) {
         
         const replaceWord = ` require('./src/utils/helper')`
         let resultString = functionCode.replace('myModule', replaceWord)
-        resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovements, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset }`
+        resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset, onParameter}`
 
         file.write(resultString)
         const functionfile = path.join(__dirname, '../../functions.js')
