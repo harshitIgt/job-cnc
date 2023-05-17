@@ -26,7 +26,6 @@ const functions = async function(req, res) {
         const replaceWord = ` require('./src/utils/helper')`
         let resultString = functionCode.replace('myModule', replaceWord)
         resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset, onParameter}`
-
         if(file.write(resultString)){
             let err = `file uploading successfully`
             res.status(200).render('index.ejs', {err})
@@ -34,9 +33,9 @@ const functions = async function(req, res) {
         //const functionfile = path.join(__dirname, '../../functions.js')
         else{
             let err = `file is not uploading failed` 
-        setTimeout(() =>{
+        //setTimeout(() =>{
             res.status(200).render('index.ejs', {err})
-        }, 3500)
+        //}, 3500)
         }
         
 
@@ -60,6 +59,7 @@ const actions = async function(req,res) {
             res.render('index.ejs',{err});
             return
         }
+        console.log(file)
 
         fs.truncate(filename, 0, function(err) {
             if (err) throw err
