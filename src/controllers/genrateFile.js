@@ -28,7 +28,7 @@ const functions = async function(req, res) {
         resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovements, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset }`
 
         file.write(resultString)
-        const functionfile = path.join(__dirname, '../../functions.js')
+        const functionfile = path.join(process.cwd(),'..','../../functions.js')
         let err = 0 
         res.status(200).render('index.ejs', {err})
 
