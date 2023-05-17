@@ -26,22 +26,17 @@ const functions = async function(req, res) {
         const replaceWord = ` require('./src/utils/helper')`
         let resultString = functionCode.replace('myModule', replaceWord)
         resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter}`
-        if(file.write(resultString)){
+        file.write(resultString)
+        //const functionfile = path.join(__dirname, '../../functions.js')
+        setTimeout(()=>{
             let err = `file uploading successfully`
             res.status(200).render('index.ejs', {err})
-        }
-        //const functionfile = path.join(__dirname, '../../functions.js')
-        else{
-            let err = `file is not uploading failed` 
-        //setTimeout(() =>{
-            res.status(200).render('index.ejs', {err})
-        //}, 3500)
-        }
+        },3500)
         
-
     }catch(error){
         console.log(error)
-        res.status(400).json({err: error.message})
+        let err = error.message
+        res.status(400).render({err})
     }
 }
 
