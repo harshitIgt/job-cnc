@@ -10,7 +10,7 @@ const functions = async function(req, res) {
          }else{
             functionCode = req.body
          }
-        const funcFile = `functions.js`
+        const funcFile = path.join(process.cwd(),'../../functions.js')
 
         const context = vm.createContext({})
         const mergedContext = { context, myModule: require('../utils/helper')};
