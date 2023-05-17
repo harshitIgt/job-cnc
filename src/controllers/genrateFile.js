@@ -30,7 +30,10 @@ const functions = async function(req, res) {
         file.write(resultString)
         const functionfile = path.join(__dirname, '../../functions.js')
         let err = 0 
-        res.status(200).render('index.ejs', {err})
+        setTimeout(() =>{
+            res.status(200).render('index.ejs', {err})
+        }, 3500)
+        
 
     }catch(error){
         console.log(error)
