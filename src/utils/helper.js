@@ -112,6 +112,30 @@ function setCNCToolOffset(value){
   global.defaultToolOffset = value;
 }
 
+let priorOutput = {
+  X: undefined,
+  Y: undefined,
+  Z: undefined
+}
+
+global.generateAxisCommand = function(X, Y, Z ) {
+  let gCodeCommand = ''
+  if (X !== priorOutput.X) {
+    gCodeCommand += `X${X} `
+    priorOutput.X = X
+  }
+  if (Y !== priorOutput.Y) {
+    gCodeCommand += `Y${Y} `
+    priorOutput.Y = Y
+  }
+  if (Z !== priorOutput.Z) {
+    gCodeCommand += `Z${Z} `
+    priorOutput.Z = Z
+  }
+  
+  return gCodeCommand
+}
+
 
 module.exports = {writeToFile, createFormate, createVariable, moveX,
-   moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset} 
+   moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset, generateAxisCommand} 

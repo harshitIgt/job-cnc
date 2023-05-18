@@ -23,11 +23,12 @@ const functions = async function(req, res) {
         const file = fs.createWriteStream(funcFile)
         
         
-        const replaceWord = ` require('./src/utils/helper')`
-        let resultString = functionCode.replace('myModule', replaceWord)
-        resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter}`
+       // const replaceWord = ` require('./src/utils/helper')`
+       // let resultString = functionCode.replace('myModule', replaceWord)
+       let resultString = ` require('./src/utils/helper')\n` + functionCode
+        resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint}`
         file.write(resultString)
-        //const functionfile = path.join(__dirname, '../../functions.js')
+
         setTimeout(()=>{
             let err = `file uploading successfully`
             res.status(200).render('index.ejs', {err})
@@ -49,6 +50,7 @@ const actions = async function(req,res) {
         const funcFile = path.join(__dirname, '../../functions.js')
         const srcFile = path.join(__dirname, '../../action.js')
         let file = fs.readFileSync(funcFile, 'utf8')
+
         if(!file){
             err = 'Please upload file'
             res.render('index.ejs',{err});
@@ -64,27 +66,41 @@ const actions = async function(req,res) {
                return 
             }
         }
-        console.log('file>>>',file)
+
         fs.truncate(filename, 0, function(err) {
             if (err) throw err
         })
         fs.truncate('output.nc', 0, function(err) {
             if (err) throw err
         })
-        fs.appendFile(filename,`const {onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter} = myModule\n\n${actionCode}` , (err) => {
+        
+        fs.appendFile(filename,`const {onOpen, onLinear, onClose, onSection, onSectionEnd,
+             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint} = myModule\n\n${actionCode}` , (err) => {
             if (err) throw err
         })
 
         fs.readFile(srcFile, 'utf8', (err,data)=>{
             if(err) throw err;
+            const helperPath = '../utils/helper.js'
+            delete require.cache[require.resolve(helperPath)]
             const filePath = '../../functions.js'
             delete require.cache[require.resolve(filePath)]
             const context = {
                 myModule: require(filePath),
             };
             try{
-                 vm.runInNewContext(data, context)
+                //vm.runInNewContextSync(data, context)
+                // runCodeSynchronously(data, context)
+                // function runCodeSynchronously(code, context) {
+                //     const script = new vm.Script(code);
+                //     const sandbox = vm.createContext(context);
+                //     return script.runInContext(sandbox);
+                // }
+                //setTimeout(()=>{
+                    vm.runInNewContext(data, context)
+                //},3000)
             }catch(error){
+                console.log(error)
                 err = error.message;
                 res.render('index.ejs',{err});
                 return 
@@ -105,6 +121,7 @@ function removeLastLine(string) {
       return '';
     } else {
       lines.pop();
+      lines.splice(0, 1);
       return lines.join('\n');
     }
   }
