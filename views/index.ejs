@@ -8,7 +8,7 @@
 </head>
 <body>
     <div>
-        <% if (locals.err != 0) { %>
+        <% if ( locals.err != undefined ) { %>
             <script>
                 alert('<%= locals.err %>');
             </script>

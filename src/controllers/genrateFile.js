@@ -1,6 +1,7 @@
 const  fs = require('fs')
 const vm = require('vm')
 const path = require('path')
+const { StatusCodes }= require('http-status-codes')
 
 const functions = async function(req, res) {
     try{
@@ -31,13 +32,12 @@ const functions = async function(req, res) {
 
         setTimeout(()=>{
             let err = `file uploading successfully`
-            res.status(200).render('index.ejs', {err})
+            res.status(StatusCodes.OK).render('index.ejs', {err})
         },3500)
         
     }catch(error){
-        console.log(error)
         let err = error.message
-        res.status(400).render({err})
+        res.status(StatusCodes.BAD_REQUEST).render({err})
     }
 }
 
@@ -86,7 +86,10 @@ const actions = async function(req,res) {
             const filePath = '../../functions.js'
             delete require.cache[require.resolve(filePath)]
             const context = {
+                console: console,
                 myModule: require(filePath),
+                exports: {},
+                require: require,
             };
             try{
                 //vm.runInNewContextSync(data, context)
@@ -97,21 +100,20 @@ const actions = async function(req,res) {
                 //     return script.runInContext(sandbox);
                 // }
                 //setTimeout(()=>{
-                    vm.runInNewContext(data, context)
+                    vm.runInNewContext(data, context, { timeout: 1000 })
                 //},3000)
             }catch(error){
-                console.log(error)
                 err = error.message;
                 res.render('index.ejs',{err});
                 return 
             }
         })
         setTimeout(() =>{
-            res.status(200).sendFile(outputFile)
-        },3500)
+            res.status(StatusCodes.OK).sendFile(outputFile)
+        },4000)
        
     } catch(error){
-        res.status(400).json({error:error.message})
+        res.status(StatusCodes.BAD_REQUEST).json({error:error.message})
     }
 }
 

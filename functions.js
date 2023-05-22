@@ -1,4 +1,7 @@
  require('./src/utils/helper')
+
+ let currentMotionMode = 'G80'
+
 function onOpen() {
  
   const gCode = [
@@ -9,7 +12,7 @@ function onOpen() {
     'G0 Z5 '
   ];
 
-  const gCodeText = gCode.join('\n');
+  const gCodeText = gCode.join('\n')
   writeToFile(gCodeText);
 }
 
@@ -22,7 +25,7 @@ function onClose() {
     '%'
   ];
 
-  const gCodeText = gCode.join('\n');
+  const gCodeText = gCode.join('\n')
   writeToFile(gCodeText);
   
 }
@@ -30,6 +33,8 @@ function onClose() {
 
 function onSection() {
   
+  resetPriorValues() // reset all values unknown
+
   const gCode = [
     'G90',
     'G0 X20 Y20 Z10 ',
@@ -39,7 +44,7 @@ function onSection() {
     'G1 Z0 ',
     'G0 X20 Y20 '
   ];
-  const gCodeText = gCode.join('\n');
+  const gCodeText = gCode.join('\n')
   writeToFile(gCodeText);
   
 }
@@ -52,18 +57,17 @@ function onSectionEnd() {
     'M5 '
   ];
 
-  const gCodeText = gCode.join('\n');
-  writeToFile(gCodeText);
-  
+  const gCodeText = gCode.join('\n')
+  writeToFile(gCodeText)
 }
 
 function onLinear (_x, _y, _z, _feedRate){
   const gCode =(`G1`);
-  const xCode = x.toFixed(4)
-  const yCode = y.toFixed(4)
-  const zCode = z.toFixed(4)
+  const xCode = _x.toFixed(4)
+  const yCode = _y.toFixed(4)
+  const zCode = _z.toFixed(4)
   
-  const command = generateAxisCommand(xCode, yCode, zCode)
+  const command = generateAxisCommand(xCode, yCode, zCode, false)
   const value = `${gCode} ${command}`
   writeToFile(value)
   return
@@ -95,10 +99,10 @@ function onCircular(clockwise, cx, cy, cz, x, y, z, feed) {
 
 function onRapid ( _X, _Y, _Z ) {
   const gCode =  `G0`
-  const xCode = _X.toFixed(4)
-  const yCode = _Y.toFixed(4)
-  const zCode = _Z.toFixed(4)
-  const command = generateAxisCommand(xCode, yCode, zCode)
+  const xCode = toFixedFormat(_X)
+  const yCode = toFixedFormat(_Y)
+  const zCode = toFixedFormat(_Z)
+  const command = generateAxisCommand(xCode, yCode, zCode, false)
 
   const value = `${gCode} ${command}`
   writeToFile(value)
@@ -106,22 +110,27 @@ function onRapid ( _X, _Y, _Z ) {
 }
 
 function onCycle(){
-  writeToFile(`G81`)
+  writeln(`G81`)
+  currentMotionMode = `G81`
   return
 }
 
 function onCycleEnd(){
-  writeToFile(`G80`)
+  if(currentMotionMode !== `G80`){
+    currentMotionMode = `G80`
+  }
   return
 }
 
 function  onCyclePoint( _X, _Y, _Z){
 
-  const xCode = `X${_X.toFixed(4)}`
-  const yCode = `Y${_Y.toFixed(4)}`
-  const zCode = `Z${_Z.toFixed(4)}`
+  const xCode = toFixedFormat(_X)
+  const yCode = toFixedFormat(_Y)
+  const zCode = toFixedFormat(_Z)
 
-  const command = `${xCode} ${yCode} ${zCode}`
+  const command = generateAxisCommand(xCode, yCode, zCode, true)
+
+  //const command = `${xCode} ${yCode} ${reactPlaneValue} ${zCode}`
   writeToFile(command)
   return
 }

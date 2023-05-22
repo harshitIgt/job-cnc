@@ -5,6 +5,14 @@ global.defaultFeedRate = 0 ;
 global.defaultSpindleSpeed = 0 ;
 global.defaultToolOffset = 0 ;
 
+let priorOutput = {
+  X: undefined,
+  Y: undefined,
+  Z: undefined,
+  R: undefined,
+  RCount: false,
+}
+
 global.writeToFile = function(data) {
     fs.appendFile(filePath, data + '\n', (err) => {
       if (err) throw err;
@@ -112,13 +120,8 @@ function setCNCToolOffset(value){
   global.defaultToolOffset = value;
 }
 
-let priorOutput = {
-  X: undefined,
-  Y: undefined,
-  Z: undefined
-}
 
-global.generateAxisCommand = function(X, Y, Z ) {
+global.generateAxisCommand = function( X, Y, Z, points ) {
   let gCodeCommand = ''
   if (X !== priorOutput.X) {
     gCodeCommand += `X${X} `
@@ -128,14 +131,43 @@ global.generateAxisCommand = function(X, Y, Z ) {
     gCodeCommand += `Y${Y} `
     priorOutput.Y = Y
   }
+  if(points){
+    if(priorOutput.RCount === true){
+      gCodeCommand += priorOutput.R ? `R${priorOutput.R} ` : ``
+      priorOutput.RCount = false
+    }
+  }
+  else{
+    priorOutput.R = Z
+    priorOutput.RCount = true
+  }
   if (Z !== priorOutput.Z) {
     gCodeCommand += `Z${Z} `
     priorOutput.Z = Z
   }
-  
   return gCodeCommand
 }
 
+global.reactPlane = function(Z = undefined){
+  let reactPlaneValue = ''
+  if (Z !== priorOutput.Z) {
+    reactPlaneValue += `R${priorOutput.Z}`
+  }
+  return reactPlaneValue
+}
+
+global.toFixedFormat = function (value) {
+  let result = Number(String(value.toFixed(4)))
+  return result
+}
+
+global.resetPriorValues = function () {
+  for(let key in priorOutput){
+    priorOutput[key] = undefined
+  }
+  return
+}
 
 module.exports = {writeToFile, createFormate, createVariable, moveX,
-   moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate, defaultSpindleSpeed, defaultToolOffset, generateAxisCommand} 
+   moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate, defaultSpindleSpeed, 
+   defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat, resetPriorValues} 
