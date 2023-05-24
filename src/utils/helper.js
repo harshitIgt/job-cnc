@@ -1,4 +1,5 @@
-const  fs = require('fs')
+const  fs = require('fs');
+const { format } = require('path');
 const filePath = 'output.nc';
 
 global.defaultFeedRate = 0 ;
@@ -13,32 +14,28 @@ let priorOutput = {
   RCount: false,
 }
 
+
 global.writeToFile = function(data) {
     fs.appendFile(filePath, data + '\n', (err) => {
       if (err) throw err;
     });
   }
-  global.writeln = function(data) {
+global.writeln = function(data) {
     fs.appendFile(filePath, data + ' ', (err) => {
       if (err) throw err;
     });
   }
-global.createFormate = function(value) {
-       let variable = {
-        decimals: value.decimals ? value.decimals : 6,
-        prefix: value.prefix ? value.prefix : undefined, 
-        sufix: value.sufix ? value.sufix : undefined, 
-       }  
-       return variable
-}
+// const createFormate = function(value) {
+//   console.log('>>>>>>>>>>>>>>>>>>>>>>>')
+//        let variable = {
+//         decimals: value.decimals ? value.decimals : 6,
+//         prefix: value.prefix ? value.prefix : undefined, 
+//         sufix: value.sufix ? value.sufix : undefined, 
+//        }  
+//        return variable
+// }
 
-global.createVariable  = function(value) {
-  let variable = {
-   prefix: value.prefix ? value.prefix : undefined, 
-   sufix: value.sufix ? value.sufix : undefined, 
-  }
-  return variable
-}
+
 global.moveX = function(value){
   writeToFile(`x${value}`)
 }
@@ -168,6 +165,81 @@ global.resetPriorValues = function () {
   return
 }
 
+//properties: createFormat
+const createFormate = function (details){
+  let variable = {
+     prefix: details.prefix,
+     decimals: details.decimals ? details.decimals : 6,
+     forceDecimal: details.forceDecimal ? details.forceDecimal : false,
+     zeropad: details.zeropad ? details.zeropad : false,
+     width: details.width ? details.width : 0,
+     format: function (value){
+      value = value.toString()
+      let result = this.prefix
+      if(this.zeropad){
+        value = value.replace(/0/g, '')
+      }
+      if(value.length > this.width){
+        value = value.slice(-this.width)
+      }
+      if(value.length < this.width){
+        value = value.padStart(this.width, '0')
+      }
+      result +=value+' '
+      return result
+     }
+  }
+  return variable
+}
+
+//properties: createVariable
+const createVariable  = function(details, formatVariable) {
+  
+  let variable = {
+    prefix: details.prefix,
+    force: details.force,
+    onchange: details.onchange,
+    formatVariable: formatVariable,
+    format: function(value){
+      let previousVariableValue 
+      if(this.prefix === 'X'){
+        //compare the previous X variable value
+        if(value !== priorOutput.X){
+          previousVariableValue = value
+          priorOutput.X = value
+        }else{
+          return ''
+        }
+      }else if (this.prefix === 'Y'){
+        //compare the previous Y variable value
+        if(value !== priorOutput.Y){
+          previousVariableValue = value
+          priorOutput.Y = value
+        }else{
+          return ''
+        }
+      }else if (this.prefix === 'Z'){
+        //compare the previous Z variable value
+        if(value !== priorOutput.Z){
+          previousVariableValue = value
+          priorOutput.Z = value
+        }else{
+          return ''
+        }
+      }else {
+        previousVariableValue = value
+      }
+      let decimalPlaces = this.formatVariable.decimals
+      let result = previousVariableValue.toFixed(decimalPlaces)
+      result = `${this.prefix}${result} `
+      return result
+    }
+  }
+
+  return variable
+}
+
+
 module.exports = {writeToFile, createFormate, createVariable, moveX,
    moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate, defaultSpindleSpeed, 
-   defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat, resetPriorValues} 
+   defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat, resetPriorValues } 

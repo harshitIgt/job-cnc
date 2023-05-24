@@ -24,9 +24,7 @@ const functions = async function(req, res) {
         const file = fs.createWriteStream(funcFile)
         
         
-       // const replaceWord = ` require('./src/utils/helper')`
-       // let resultString = functionCode.replace('myModule', replaceWord)
-       let resultString = ` require('./src/utils/helper')\n` + functionCode
+       let resultString = `const{ createFormate, createVariable } = require('./src/utils/helper')\n` + functionCode
         resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint}`
         file.write(resultString)
 
@@ -58,15 +56,21 @@ const actions = async function(req,res) {
         }
         else {
             try{
-                let newFile =  removeLastLine(file);
-                vm.runInNewContext(newFile)
+                let compiledFunctionFile =  removeLastLine(file);
+                // const myContext = {
+                //     require: require('./'), 
+                //     console: console 
+                //   };
+                //vm.runInNewContext(compiledFunctionFile, myContext);
             }catch(error){
+                console.log('eerrr',error)
                err = error.message;
                res.render('index.ejs',{err});
                return 
             }
         }
 
+        // change the size of the files (empty files)
         fs.truncate(filename, 0, function(err) {
             if (err) throw err
         })
@@ -74,6 +78,7 @@ const actions = async function(req,res) {
             if (err) throw err
         })
         
+        // adding the data in the action file
         fs.appendFile(filename,`const {onOpen, onLinear, onClose, onSection, onSectionEnd,
              onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint} = myModule\n\n${actionCode}` , (err) => {
             if (err) throw err
@@ -92,17 +97,11 @@ const actions = async function(req,res) {
                 require: require,
             };
             try{
-                //vm.runInNewContextSync(data, context)
-                // runCodeSynchronously(data, context)
-                // function runCodeSynchronously(code, context) {
-                //     const script = new vm.Script(code);
-                //     const sandbox = vm.createContext(context);
-                //     return script.runInContext(sandbox);
-                // }
-                //setTimeout(()=>{
-                    vm.runInNewContext(data, context, { timeout: 1000 })
-                //},3000)
+
+               vm.runInNewContext(data, context, { timeout: 1000 })
+               
             }catch(error){
+                console.log(">>e",error)
                 err = error.message;
                 res.render('index.ejs',{err});
                 return 
