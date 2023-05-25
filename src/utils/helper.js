@@ -14,8 +14,16 @@ let priorOutput = {
   RCount: false,
 }
 
+global.minimumChordLength = 0
+global.minimumCircularRadius = 0
+global.maximumCircularRadius = 0
+global.minimumCircularSweep = 0
+global.maximumCircularSweep = 0
+global.allowHelicalMoves = 0
 
-global.writeToFile = function(data) {
+
+
+global.writeBlock = function(data) {
     fs.appendFile(filePath, data + '\n', (err) => {
       if (err) throw err;
     });
@@ -37,16 +45,16 @@ global.writeln = function(data) {
 
 
 global.moveX = function(value){
-  writeToFile(`x${value}`)
+  writeBlock(`x${value}`)
 }
 global.moveY = function(value){
-  writeToFile(`y${value}`)
+  writeBlock(`y${value}`)
 }
 global.moveZ = function(value){
-  writeToFile(`z${value}`)
+  writeBlock(`z${value}`)
 }
 global.onLinear = function(){
-  writeToFile(``)
+  writeBlock(``)
 }
 
 global.onMovements = function(selectedObjects) {
@@ -77,18 +85,18 @@ global.onMovements = function(selectedObjects) {
 }
 
 function performCutting() {
-  writeToFile(`\n(Cutting)\n`)
+  writeBlock(`\n(Cutting)\n`)
 }
 
 function performDrilling() {
-  writeToFile(`\n(Drilling)\n`)
+  writeBlock(`\n(Drilling)\n`)
 }
 
 function performLeadIn() {
-  writeToFile(`\n(MOVEMENT_LEAD_IN)\n`)
+  writeBlock(`\n(MOVEMENT_LEAD_IN)\n`)
 }
 function performLeadOut() {
-  writeToFile(`\n(MOVEMENT_LEAD_OUT)\n`)
+  writeBlock(`\n(MOVEMENT_LEAD_OUT)\n`)
 }
 
 global.onParameters = function(name, value) {
@@ -239,7 +247,51 @@ const createVariable  = function(details, formatVariable) {
   return variable
 }
 
+// converts degree to radians
+global.toRad = function (degree){
+  let radians = degree * (Math.PI / 180)
+  return radians
+}
 
-module.exports = {writeToFile, createFormate, createVariable, moveX,
-   moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate, defaultSpindleSpeed, 
-   defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat, resetPriorValues } 
+global.toDeg = function (radians){
+  let degree = radians * 180 / Math.PI
+  return degree
+}
+
+// converts units either MM to IN or IN to MM
+global.toPreciseUnit = function (value, unit){
+  let resultValue
+  if(unit === `MM`){
+    resultValue = value * 25.4
+  }else{
+    resultValue = value / 25.4
+  }
+  return resultValue
+}
+
+// sending the value in the MM format
+global.spatial = function (value, unit){
+  let resultValue
+  if(unit === `MM`){
+    resultValue = value * 25
+  }
+  return resultValue
+}
+
+// sends the result if condition is true else return empty string
+global.conditional = function (isTrue, value){
+  let resultString 
+  if(isTrue === true){
+    resultString = value
+  }else{
+    resultString = ''
+  }
+  return resultString
+}
+
+
+module.exports = { writeBlock, createFormate, createVariable, moveX, toRad, toDeg, toPreciseUnit,
+  spatial, conditional,moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
+  defaultSpindleSpeed, defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat,
+  resetPriorValues,minimumChordLength ,minimumCircularRadius ,maximumCircularRadius ,minimumCircularSweep,
+  maximumCircularSweep ,allowHelicalMoves } 
