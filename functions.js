@@ -11,6 +11,8 @@ let iOutput = createVariable({prefix:'I'}, ijkFormat)
 let jOutput = createVariable({prefix:'J'}, ijkFormat)
 let kOutput = createVariable({prefix:'K'}, ijkFormat)
 
+let gPlaneModal  = createModal({}, gFormat)
+
 minimumChordLength = spatial(0.25, unit)
 minimumCircularRadius = spatial(0.01, unit)
 maximumCircularRadius = spatial(1000, unit)
@@ -102,7 +104,7 @@ function onCircular(clockwise, cx, cy, cz, x, y, z, feed) {
  const kCode = kOutput.format(k)
  
  const xCode = xOutput.format(x)
- const yCode = yOutput.format(z)   
+ const yCode = yOutput.format(z)
  const zCode = zOutput.format(z)
  
 
@@ -125,7 +127,6 @@ function onRapid ( _X, _Y, _Z ) {
 }
 
 function onCycle(){
- writeln(`G81`)
  currentMotionMode = `G81 `
  return
 }
@@ -134,6 +135,7 @@ function onCycleEnd(){
  if(currentMotionMode !== `G80 `){
    currentMotionMode = `G80 `
  }
+ writeln(currentMotionMode)
  return
 }
 
@@ -143,7 +145,7 @@ function  onCyclePoint( _X, _Y, _Z){
  const yCode = _Y.toFixed(3)
  const zCode = _Z.toFixed(3)
 
- const command = generateAxisCommand(xCode, yCode, zCode, true)
+ const command = `${currentMotionMode} ${generateAxisCommand(xCode, yCode, zCode, true)}`
 
  //const command = `${xCode} ${yCode} ${reactPlaneValue} ${zCode}`
  writeBlock(command)

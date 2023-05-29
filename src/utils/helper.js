@@ -21,6 +21,9 @@ global.minimumCircularSweep = 0
 global.maximumCircularSweep = 0
 global.allowHelicalMoves = 0
 
+let isProbeOperation = false
+let isProbingCycle = false
+let isRedirecting = false
 
 
 global.writeBlock = function(data) {
@@ -247,6 +250,16 @@ const createVariable  = function(details, formatVariable) {
   return variable
 }
 
+//property: createModal
+global.createModal = function ( details, format){
+  let value = {
+    details: details,
+    format: format
+
+  }
+  return value
+}
+
 // converts degree to radians
 global.toRad = function (degree){
   let radians = degree * (Math.PI / 180)
@@ -290,7 +303,7 @@ global.conditional = function (isTrue, value){
 }
 
 
-module.exports = { writeBlock, createFormate, createVariable, moveX, toRad, toDeg, toPreciseUnit,
+module.exports = { writeBlock, createFormate, createVariable, createModal, moveX, toRad, toDeg, toPreciseUnit,
   spatial, conditional,moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
   defaultSpindleSpeed, defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat,
   resetPriorValues,minimumChordLength ,minimumCircularRadius ,maximumCircularRadius ,minimumCircularSweep,
