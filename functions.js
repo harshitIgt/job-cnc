@@ -63,7 +63,7 @@ function onSection() {
    'G1 X40 Y40 F200 ',
    'G1 Z0 ',
    'G0 X20 Y20 '
- ];
+  ];
  const gCodeText = gCode.join('\n')
  writeBlock(gCodeText);
  

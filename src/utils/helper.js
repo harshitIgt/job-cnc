@@ -315,6 +315,17 @@ global.spatial = function (value, unit){
   }
   return resultValue
 }
+global.getAsInt = function (text) {
+  if (typeof text === 'string') {
+    let value = Number(text)
+    if (value) {
+      return value 
+    } else {
+      return ''
+    }
+  }
+  return ''
+}
 
 // sends the result if condition is true else return empty string
 global.conditional = function (isTrue, value){
@@ -327,11 +338,22 @@ global.conditional = function (isTrue, value){
   return resultString
 }
 
+let FirstCyclePoint = 0
+global.isFirstCyclePoint = () => {
+  if (FirstCyclePoint === 0) {
+    FirstCyclePoint ++
+    return true
+  }
+  else if (count > 0) {
+    return false
+  }
+}
+
 
 module.exports = {
-  writeBlock, createFormate, createVariable, createReferanceVariable, moveX, toRad, toDeg, toPreciseUnit,
+  writeBlock, createFormate, createVariable,isFirstCyclePoint, createReferanceVariable, moveX, toRad, toDeg, toPreciseUnit,
   spatial, conditional, moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
   defaultSpindleSpeed, defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat,
   resetPriorValues, minimumChordLength, minimumCircularRadius, maximumCircularRadius, minimumCircularSweep,
-  maximumCircularSweep, allowHelicalMoves,
+  maximumCircularSweep, allowHelicalMoves, getAsInt
 }
