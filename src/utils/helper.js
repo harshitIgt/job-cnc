@@ -250,6 +250,31 @@ const createVariable  = function(details, formatVariable) {
   return variable
 }
 
+// property: createReferanceVariable
+global.createReferanceVariable = (obj, formatVariable) => {
+  let variable = {
+    prefix: obj.prefix,
+    force: obj.force,
+    onchange: obj.onchange,
+    suffix: obj.suffix,
+    fist: obj.fist,
+    formatVariable: formatVariable,
+    format: function (value, decimals) {
+      if (value === decimals) {
+        return ''
+      }
+      if (typeof value === 'number') {
+        return this.prefix + value.toFixed(decimals).padStart(this.fist, '0')
+      }
+      else {
+        return '';
+      }
+    }
+  }
+  return variable;
+}
+
+
 //property: createModal
 global.createModal = function ( details, format){
   let value = {
@@ -303,8 +328,10 @@ global.conditional = function (isTrue, value){
 }
 
 
-module.exports = { writeBlock, createFormate, createVariable, createModal, moveX, toRad, toDeg, toPreciseUnit,
-  spatial, conditional,moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
+module.exports = {
+  writeBlock, createFormate, createVariable, createReferanceVariable, moveX, toRad, toDeg, toPreciseUnit,
+  spatial, conditional, moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
   defaultSpindleSpeed, defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat,
-  resetPriorValues,minimumChordLength ,minimumCircularRadius ,maximumCircularRadius ,minimumCircularSweep,
-  maximumCircularSweep ,allowHelicalMoves } 
+  resetPriorValues, minimumChordLength, minimumCircularRadius, maximumCircularRadius, minimumCircularSweep,
+  maximumCircularSweep, allowHelicalMoves,
+}
