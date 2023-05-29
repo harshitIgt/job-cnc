@@ -250,8 +250,8 @@ const createVariable  = function(details, formatVariable) {
   return variable
 }
 
-// property: createReferanceVariable
-global.createReferanceVariable = (obj, formatVariable) => {
+// property: createReferenceVariable
+global.createReferenceVariable = (obj, formatVariable) => {
   let variable = {
     prefix: obj.prefix,
     force: obj.force,
@@ -351,7 +351,7 @@ global.isFirstCyclePoint = () => {
 
 
 module.exports = {
-  writeBlock, createFormate, createVariable,isFirstCyclePoint, createReferanceVariable, moveX, toRad, toDeg, toPreciseUnit,
+  writeBlock, createFormate, createVariable,isFirstCyclePoint, createReferenceVariable, moveX, toRad, toDeg, toPreciseUnit,
   spatial, conditional, moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
   defaultSpindleSpeed, defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat,
   resetPriorValues, minimumChordLength, minimumCircularRadius, maximumCircularRadius, minimumCircularSweep,

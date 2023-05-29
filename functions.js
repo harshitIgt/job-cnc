@@ -11,7 +11,9 @@ let iOutput = createVariable({prefix:'I'}, ijkFormat)
 let jOutput = createVariable({prefix:'J'}, ijkFormat)
 let kOutput = createVariable({prefix:'K'}, ijkFormat)
 
-let gPlaneModal  = createModal({}, gFormat)
+let gPlaneModal = createModal({}, gFormat)
+
+
 
 minimumChordLength = spatial(0.25, unit)
 minimumCircularRadius = spatial(0.01, unit)
@@ -46,7 +48,7 @@ function onClose() {
  ];
 
  const gCodeText = gCode.join('\n')
- writeBlock(gCodeText);
+ writeBlock(gCodeText)
  
 }
 
