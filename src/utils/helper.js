@@ -1,6 +1,8 @@
-const  fs = require('fs');
-const { format } = require('path');
-const filePath = 'output.nc';
+const fs = require('fs')
+const path = require('path')
+const { format } = require('path')
+const filePath = 'output.nc'
+const stream = fs.createReadStream('action.js')
 
 global.defaultFeedRate = 0 ;
 global.defaultSpindleSpeed = 0 ;
@@ -25,6 +27,10 @@ let isProbeOperation = false
 let isProbingCycle = false
 let isRedirecting = false
 
+global.setCodePage = function (pageType) {
+  stream.encoding = pageType
+}
+
 
 global.writeBlock = function(data) {
     fs.appendFile(filePath, data + '\n', (err) => {
@@ -32,30 +38,12 @@ global.writeBlock = function(data) {
     });
   }
 global.writeln = function(data) {
-    fs.appendFile(filePath, data + ' ', (err) => {
+    fs.appendFile(filePath, data + '\n', (err) => {
       if (err) throw err;
     });
   }
-// const createFormate = function(value) {
-//   console.log('>>>>>>>>>>>>>>>>>>>>>>>')
-//        let variable = {
-//         decimals: value.decimals ? value.decimals : 6,
-//         prefix: value.prefix ? value.prefix : undefined, 
-//         sufix: value.sufix ? value.sufix : undefined, 
-//        }  
-//        return variable
-// }
 
 
-global.moveX = function(value){
-  writeBlock(`x${value}`)
-}
-global.moveY = function(value){
-  writeBlock(`y${value}`)
-}
-global.moveZ = function(value){
-  writeBlock(`z${value}`)
-}
 global.onLinear = function(){
   writeBlock(``)
 }
@@ -177,7 +165,7 @@ global.resetPriorValues = function () {
 }
 
 //properties: createFormat
-const createFormate = function (details){
+const createFormat = function (details){
   let variable = {
      prefix: details.prefix,
      decimals: details.decimals ? details.decimals : 6,
@@ -274,12 +262,39 @@ global.createReferenceVariable = (obj, formatVariable) => {
   return variable;
 }
 
+// property:createAxis
+global.createAxis = function (details) {
+  let variable = {
+    actuator: details.actuator,
+    table: details.table,
+    axis: details.axis,
+    homePosition: details.homePosition,
+    offset: details.offset,
+    coordinate: details.coordinate ? details.coordinate : 0 ,
+    cyclic: details.cyclic,
+    tcp: details.tcp,
+    range: details.range,
+    preference: details.preference,
+    resolution: details.resolution ? details.resolution : 0 ,
+    maximumFeed: details.maximumFeed ? details.maximumFeed : 0 ,
+    rapidFeed: details.rapidFeed ? details.rapidFeed : 0 ,
+    reset: details.reset ? details.reset : 0 
+  }
+  
+  return variable 
+
+}
+
+
 
 //property: createModal
 global.createModal = function ( details, format){
   let value = {
     details: details,
-    format: format
+    format: format,
+    format: function (value) {
+      
+    }
 
   }
   return value
@@ -315,6 +330,8 @@ global.spatial = function (value, unit){
   }
   return resultValue
 }
+
+// convert string to number
 global.getAsInt = function (text) {
   if (typeof text === 'string') {
     let value = Number(text)
@@ -339,7 +356,7 @@ global.conditional = function (isTrue, value){
 }
 
 let FirstCyclePoint = 0
-global.isFirstCyclePoint = () => {
+global.isFirstCyclePoint = function () {
   if (FirstCyclePoint === 0) {
     FirstCyclePoint ++
     return true
@@ -349,11 +366,76 @@ global.isFirstCyclePoint = () => {
   }
 }
 
+global.validate = function (isTrue, action) {
+  if (!isTrue) {
+    return action
+  }
+  return ''
+}
+
+global.setMachineConfiguration = function (machineConfig) {
+  return true 
+}
+global.getProperty = function (property) {
+  // prperty has to be defined
+}
+
+//there is problem we have to handle 
+global.formatWords = function (...args) {
+  let wordString = Object.values(args[0]).join('');
+  return wordString
+} 
+
+// it sets the word separated
+global.setWordSeparator = function (msg ,  separator = ' ') {
+  if (typeof msg === 'string') {
+    msg = msg.split(' ').join(separator);
+    return
+  } else {
+    throw new Error('Invalid type')
+  }
+}
+
+// filter messages
+global.filterText = function (text, keep) {
+  if (typeof text === 'string' && typeof keep === 'string') {
+    var filteredText = "";
+    for (var i = 0; i < text.length; i++) {
+      if (keep.includes(text[i])) {
+        filteredText += text[i];
+      }
+    }
+    return filteredText;
+  }
+}
+
+// writes word in  nc file
+  global.writeWords = function (...args) {
+    let wordString = Object.values(args[0]).join('');
+    fs.appendFile(filePath, wordString + '\n', (err) => {
+      if (err) throw err;
+    })
+}
+
+// find the total number of sections in action file
+global.getNumberOfSections = function () {
+  let actinsFileLocation = path.join(__dirname, '../../action.js')
+  let actions = ''
+  fs.readFile(actinsFileLocation, 'utf8', function (err, data) {
+    if (err) throw err
+    actions = data
+  })
+  const regex = new RegExp('\\b' + 'onSection()' + '\\b', 'gi')
+  const matches = actions.match(regex)
+  console.log( matches )
+  return matches ? matches : 0 
+}
 
 module.exports = {
-  writeBlock, createFormate, createVariable,isFirstCyclePoint, createReferenceVariable, moveX, toRad, toDeg, toPreciseUnit,
-  spatial, conditional, moveY, moveZ, onMovements, writeln, onParameters, defaultFeedRate,
+  setCodePage ,writeBlock, createVariable, isFirstCyclePoint, createReferenceVariable, toRad, toDeg, toPreciseUnit,
+  spatial, conditional, onMovements, writeln, onParameters, defaultFeedRate,
   defaultSpindleSpeed, defaultToolOffset, generateAxisCommand, reactPlane, toFixedFormat,
   resetPriorValues, minimumChordLength, minimumCircularRadius, maximumCircularRadius, minimumCircularSweep,
-  maximumCircularSweep, allowHelicalMoves, getAsInt
+  maximumCircularSweep, allowHelicalMoves, getAsInt, validate, createAxis, setMachineConfiguration,
+  formatWords, setWordSeparator, filterText, writeWords, getNumberOfSections, priorOutput
 }

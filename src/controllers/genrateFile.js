@@ -24,7 +24,7 @@ const functions = async function(req, res) {
         const file = fs.createWriteStream(funcFile)
         
         
-       let resultString = `const{ createFormate, createVariable } = require('./src/utils/helper')\n` + functionCode
+       let resultString = `const{ createFormat, createVariable } = require('./src/utils/helper')\n` + functionCode
         resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint}`
         file.write(resultString)
 
@@ -80,7 +80,7 @@ const actions = async function(req,res) {
         
         // adding the data in the action file
         fs.appendFile(filename,`const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint} = myModule\n\n${actionCode}` , (err) => {
+             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine} = myModule\n\n${actionCode}` , (err) => {
             if (err) throw err
         })
 
