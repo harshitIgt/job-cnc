@@ -4,17 +4,7 @@ require('./src/utils/healperVariables')
 const {Vector} = require('./src/utils/classes/Vector')
 const { Matrix } = require('./src/utils/classes/Matrix')
 const { MachineConfiguration } = require('./src/utils/classes/MachineConfiguration')
-/**
-  Copyright (C) 2012-2023 by Autodesk, Inc.
-  All rights reserved.
 
-  FANUC post processor configuration.
-
-  $Revision: 44066 595dc754de98319ddce25b7bc7c15246072fce54 $
-  $Date: 2023-05-15 12:25:05 $
-
-  FORKID {04622D27-72F0-45d4-85FB-DB346FD1AE22} 
-*/
 unit = 'IN'
 DEG = `DEG`
 description = "FANUC";
