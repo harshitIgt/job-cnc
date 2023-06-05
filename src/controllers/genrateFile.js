@@ -81,7 +81,7 @@ const actions = async function (req, res) {
     fs.appendFile(
       filename,
       `const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell} = myModule\n\n${actionCode}`,
+             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D} = myModule\n\n${actionCode}`,
       (err) => {
         if (err) throw err;
       }

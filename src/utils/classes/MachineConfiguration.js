@@ -1,3 +1,5 @@
+const { priorOutput } = require("../helper");
+
 class MachineConfiguration {
   constructor(...args) {
     if (args.length === 0) {
@@ -103,6 +105,43 @@ class MachineConfiguration {
     } else if (coordinate === 2) {
       return this.axis[2] !== 0;
     }
+  }
+
+  //Returns true if the X-coordinate of the home position is valid.
+  hasHomePositionX() {
+    if (priorOutput.X !== undefined) {
+      return true;
+    } else return false;
+  }
+
+  //Returns true if the Y-coordinate of the home position is valid
+  hasHomePositionY() {
+    if (priorOutput.Y !== undefined) {
+      return true;
+    }
+  }
+
+  //Returns true if the Z-coordinate of the home position is valid
+  hasHomePositionZ() {
+    if (priorOutput.Z !== undefined) {
+      return true;
+    }
+  }
+
+  //Returns the machine retraction plane coordinate (by default it sending first plane)
+  getRetractPlane() {
+    return 2;
+  }
+
+  // we are sending just number
+  getAxisU() {
+    return 1;
+  }
+  getAxisV() {
+    return 2;
+  }
+  getAxisW() {
+    return 3;
   }
 }
 

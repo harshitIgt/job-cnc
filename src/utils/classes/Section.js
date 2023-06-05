@@ -29,6 +29,11 @@ class Section {
   getTool() {
     return Tool;
   }
+
+  //Returns true if the section has been optimized for a machine configuration
+  isOptimizedForMachine() {
+    return true; // don't found any resources
+  }
 }
 
 global.Section = Section;

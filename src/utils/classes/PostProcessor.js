@@ -104,6 +104,68 @@ global.isDrillingCycle = function () {
   return true;
 };
 
+// did not find about this function
+global.writeSectionNotes = function () {
+  return;
+};
+
+//Returns the next tool with a different tool number (ND)
+global.getNextTool = function (number) {
+  // if (typeof  number !== "number") {
+  //   throw new Error("gerNextTool must be a number");
+  // }
+  return number;
+};
+global.getFirstTool = function () {
+  return 1;
+};
+
+//attributes
+// it returns the current tool by it is currently return 1 (not detail information in docs)
+global.tool = 1;
+
+//coordinate index
+global.X = priorOutput.X;
+global.Y = priorOutput.Y;
+global.Z = priorOutput.Z;
+
+//Returns true if section is a tapping operation, otherwise returns false (ND)
+global.isTappingCycle = function (sections) {
+  return true;
+};
+
+// Returns true if activatePolarMode() has been called
+global.isPolarModeActive = function () {
+  return true;
+};
+
+// Returns the tool axis if the section is not optimized for the machine (ND)
+global.getCurrentDirection = function () {
+  return { X: 0, Y: 0, Z: 0 };
+};
+
+//Returns the id of the current section. Returns -1 is no section is active
+global.getCurrentSectionId = function () {
+  return 1; // we are currently sending 1
+};
+
+global.isInspectionOperation = function (section) {
+  return false; // temporarily
+};
+global.isProbeOperation = function (section) {
+  return true;
+};
+
+//change (M06). (Not Sure)
+global.COMMAND_LOAD_TOOL = 06;
+global.COMMAND_COOLANT_OFF = 09;
+global.COMMAND_COOLANT_ON = 08;
+global.COMMAND_STOP = 00;
+global.COMMAND_OPTIONAL_STOP = 01;
+global.COMMAND_START_SPINDLE = 03; //right now fixed
+global.COMMAND_START_CHIP_TRANSPORT = 0;
+global.COMMAND_UNLOCK_MULTI_AXIS = 0;
+
 module.exports = {
   currentSection,
   localize,
@@ -120,4 +182,15 @@ module.exports = {
   TOOL_PROBE,
   isDrillingCycle,
   spindleSpeed,
+  writeSectionNotes,
+  tool,
+  X,
+  Y,
+  Z,
+  COMMAND_LOAD_TOOL,
+  COMMAND_COOLANT_OFF,
+  COMMAND_COOLANT_ON,
+  COMMAND_STOP,
+  COMMAND_OPTIONAL_STOP,
+  COMMAND_START_SPINDLE,
 };

@@ -1,4 +1,5 @@
 require("./src/utils/index");
+const Vector = require("./src/utils/classes/Vector");
 
 unit = "IN";
 DEG = `DEG`;
@@ -274,6 +275,7 @@ properties = {
     scope: "post",
   },
 };
+getPropertyValues(properties);
 
 // wcs definiton
 wcsDefinitions = {
@@ -1454,6 +1456,7 @@ function onComment(text) {
 */
 function writeToolBlock() {
   var show = getProperty("showSequenceNumbers");
+  console.log("show: ", show);
   setProperty(
     "showSequenceNumbers",
     show == "true" || show == "toolChange" ? "true" : "false"
@@ -3554,6 +3557,7 @@ function writeRetract() {
       // cancel rotation before retracting
       cancelWorkPlane(true);
     }
+    retract.method = "G28"; // TEMPARY FIX
     switch (retract.method) {
       case "G28":
         forceModals(gMotionModal, gAbsIncModal);
@@ -4907,4 +4911,5 @@ module.exports = {
   onCycleEnd,
   onCyclePoint,
   onDwell,
+  onRapid5D,
 };
