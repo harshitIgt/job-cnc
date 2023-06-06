@@ -441,7 +441,7 @@ var settings = {
     semi: 4, // semi-roughing level for smoothing in automatic mode
     semifinishing: 7, // semi-finishing level for smoothing in automatic mode
     finishing: 10, // finishing level for smoothing in automatic mode
-    thresholdRoughing: (0.5, MM), // operations with stock/tolerance above that threshold will use roughing level in automatic mode
+    thresholdRoughing: 0.5, // operations with stock/tolerance above that threshold will use roughing level in automatic mode
     thresholdFinishing: toPreciseUnit(0.05, MM), // operations with stock/tolerance below that threshold will use finishing level in automatic mode
     thresholdSemiFinishing: toPreciseUnit(0.1, MM), // operations with stock/tolerance above finishing and below threshold roughing that threshold will use semi finishing level in automatic mode
 
@@ -1456,7 +1456,6 @@ function onComment(text) {
 */
 function writeToolBlock() {
   var show = getProperty("showSequenceNumbers");
-  console.log("show: ", show);
   setProperty(
     "showSequenceNumbers",
     show == "true" || show == "toolChange" ? "true" : "false"
@@ -1906,9 +1905,9 @@ function unwindABC(abc) {
 
       // only use the active axis in calculations
       var tempABC = new Vector(0, 0, 0);
-      tempABC.setCoordinate(j, abc.getCoordinate(j));
+      tempABC.setCoordinate(1, 2);
       var tempCurrent = new Vector(0, 0, 0); // only use the active axis in calculations
-      tempCurrent.setCoordinate(j, currentDirection.getCoordinate(j));
+      // tempCurrent.setCoordinate(1, currentDirection.getCoordinate(2));
       var orientation = machineConfiguration.getOrientation(tempCurrent);
 
       // get closest angle without respecting 'reset' flag
@@ -1918,10 +1917,10 @@ function unwindABC(abc) {
         tempABC,
         ABC,
         PREFER_PREFERENCE,
-        ENABLE_WCS
+        (ENABLE_WCS = 1)
       );
       var distanceABC = abcFormat.getResultingValue(
-        Math.abs(Vector.diff(getCurrentDirection(), abc).getCoordinate(j))
+        Math.abs(Vector.diff(getCurrentDirection(), abc).getCoordinate(1))
       );
 
       // calculate distance from calculated abc to closest abc
@@ -4707,7 +4706,8 @@ function writeProbeCycle(cycle, x, y, z, P, F) {
 }
 
 function printProbeResults() {
-  return currentSection.getParameter("printResults", 0) == 1;
+  // return currentSection.getParameter("printResults", 0) == 1;
+  return tru;
 }
 
 /** Convert approach to sign. */
@@ -4912,4 +4912,5 @@ module.exports = {
   onCyclePoint,
   onDwell,
   onRapid5D,
+  onSpindleSpeed,
 };

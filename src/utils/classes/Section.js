@@ -34,6 +34,11 @@ class Section {
   isOptimizedForMachine() {
     return true; // don't found any resources
   }
+
+  //Returns the zero-based id of the section.(NC)
+  getId = function () {
+    return 0;
+  };
 }
 
 global.Section = Section;

@@ -1,4 +1,7 @@
 const { priorOutput } = require("../helper");
+const Axis = require("./Axis");
+const Matrix = require("./Matrix");
+const Vector = require("./Vector");
 
 class MachineConfiguration {
   constructor(...args) {
@@ -135,13 +138,48 @@ class MachineConfiguration {
 
   // we are sending just number
   getAxisU() {
-    return 1;
+    return new Axis();
   }
   getAxisV() {
-    return 2;
+    return new Axis();
   }
   getAxisW() {
-    return 3;
+    return new Axis();
+  }
+
+  //Returns the matrix for the specified ABC angles.
+  getOrientation(abc) {
+    const a = abc.X;
+    const b = abc.Y;
+    const c = abc.Z;
+
+    // Calculate the matrix for the specified ABC angles
+    const sinA = Math.sin(a);
+    const cosA = Math.cos(a);
+    const sinB = Math.sin(b);
+    const cosB = Math.cos(b);
+    const sinC = Math.sin(c);
+    const cosC = Math.cos(c);
+
+    const orientationMatrix = new Matrix();
+
+    orientationMatrix.data[0][0] = cosA * cosB;
+    orientationMatrix.data[0][1] = -sinA * cosC + cosA * sinB * sinC;
+    orientationMatrix.data[0][2] = sinA * sinC + cosA * sinB * cosC;
+    orientationMatrix.data[1][0] = sinA * cosB;
+    orientationMatrix.data[1][1] = cosA * cosC + sinA * sinB * sinC;
+    orientationMatrix.data[1][2] = -cosA * sinC + sinA * sinB * cosC;
+    orientationMatrix.data[2][0] = -sinB;
+    orientationMatrix.data[2][1] = cosB * sinC;
+    orientationMatrix.data[2][2] = cosB * cosC;
+
+    return orientationMatrix;
+  }
+
+  //not found exect logic just sending vector (not implemented)
+  getABCByPreference(orientation, current, controllingAxis, type, options) {
+    let ABCByPre = new Vector();
+    return ABCByPre;
   }
 }
 

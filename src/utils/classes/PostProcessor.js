@@ -156,6 +156,16 @@ global.isProbeOperation = function (section) {
   return true;
 };
 
+//Sets the tool axis if the section is not optimized for the machine
+global.setCurrentDirection = function (direction) {
+  return; // not implemented yet
+};
+
+//Called to pass the current machine angles back to the post engine. (not implemented yet)
+global.setCurrentABC = function () {
+  return;
+};
+
 //change (M06). (Not Sure)
 global.COMMAND_LOAD_TOOL = 06;
 global.COMMAND_COOLANT_OFF = 09;
@@ -165,6 +175,9 @@ global.COMMAND_OPTIONAL_STOP = 01;
 global.COMMAND_START_SPINDLE = 03; //right now fixed
 global.COMMAND_START_CHIP_TRANSPORT = 0;
 global.COMMAND_UNLOCK_MULTI_AXIS = 0;
+
+//cycle
+global.cycle = 30; // dont know how will it work
 
 module.exports = {
   currentSection,

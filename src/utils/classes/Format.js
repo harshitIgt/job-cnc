@@ -73,8 +73,15 @@ class Format {
     return result;
   }
 
-  //pending
-  getResultingValue() {}
+  //Returns the resulting value for the specified value. .getResultingValue(123.1234); // returns 123.123
+  getResultingValue(value) {
+    if (typeof value !== "number") {
+      throw new Error("please provide a number");
+    }
+    let decimalPlaces = this.decimals;
+    let result = value.toFixed(decimalPlaces);
+    return result;
+  }
 
   //pending
   getError() {}

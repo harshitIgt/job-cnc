@@ -55,14 +55,16 @@ const actions = async function (req, res) {
       return;
     } else {
       try {
-        let compiledFunctionFile = removeLastLine(file);
+        //let compiledFunctionFile = removeLastLine(file);
         // const myContext = {
-        //     require: require('./'),
-        //     console: console
-        //   };
-        //vm.runInNewContext(compiledFunctionFile, myContext);
+        //   require: (moduleName) => {
+        //     const modulePath = path.join(__dirname, "../utils/index");
+        //     return require(modulePath);
+        //   },
+        // };
+        // vm.runInNewContext(file, myContext);
       } catch (error) {
-        console.log("eerrr", error);
+        //console.log("eerrr", error);
         err = error.message;
         res.render("index.ejs", { err });
         return;
@@ -81,7 +83,7 @@ const actions = async function (req, res) {
     fs.appendFile(
       filename,
       `const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D} = myModule\n\n${actionCode}`,
+             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D,onSpindleSpeed} = myModule\n\n${actionCode}`,
       (err) => {
         if (err) throw err;
       }
@@ -104,7 +106,7 @@ const actions = async function (req, res) {
       try {
         vm.runInNewContext(data, context, { timeout: 1000 });
       } catch (error) {
-        console.log(">>e", error);
+        //console.log(">>e", error);
         err = error.message;
         res.render("index.ejs", { err });
         return;
@@ -114,7 +116,7 @@ const actions = async function (req, res) {
       res.status(StatusCodes.OK).sendFile(outputFile);
     }, 4000);
   } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+    res.status(StatusCodes.OK).json({ error: error.message }); //sending error and server will not crash
   }
 };
 

@@ -307,7 +307,6 @@ global.getNumberOfSections = function () {
 let properties;
 global.getPropertyValues = function (value) {
   properties = value;
-  console.log(`p: ${properties}`);
 };
 
 global.setProperty = function (propertyName, value) {
