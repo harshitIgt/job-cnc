@@ -6,6 +6,8 @@ const PostProcessor = require("./PostProcessor");
 const Variable = require("./Variable");
 const Vector = require("./Variable");
 const Section = require("./Section");
+const Tool = require("./tool");
+const ToolTable = require("./ToolTable");
 
 module.exports = {
   Section,
@@ -16,4 +18,6 @@ module.exports = {
   Matrix,
   MachineConfiguration,
   Format,
+  Tool,
+  ToolTable,
 };

@@ -2377,7 +2377,7 @@ function getCoolantCodes(coolant, format) {
     coolantOff = coolantCodes.off;
     m = coolantCodes.on;
   }
-
+  m = 1;
   if (!m) {
     onUnsupportedCoolant(coolant);
     m = 9;
@@ -2578,23 +2578,39 @@ function writeProgramHeader() {
           }
         }
       }
-      // var tools = getToolTable();
-      // if (tools.getNumberOfTools() > 0) {
-      //   for (var i = 0; i < tools.getNumberOfTools(); ++i) {
-      //     var tool = tools.getTool(i);
-      //     var comment = "T" + toolFormat.format(tool.number) + " " +
-      //     "D=" + xyzFormat.format(tool.diameter) + " " +
-      //     localize("CR") + "=" + xyzFormat.format(tool.cornerRadius);
-      //     if ((tool.taperAngle > 0) && (tool.taperAngle < Math.PI)) {
-      //       comment += " " + localize("TAPER") + "=" + taperFormat.format(tool.taperAngle) + localize("deg");
-      //     }
-      //     if (zRanges[tool.number]) {
-      //       comment += " - " + localize("ZMIN") + "=" + xyzFormat.format(zRanges[tool.number].getMinimum());
-      //     }
-      //     comment += " - " + getToolTypeName(tool.type);
-      //     writeComment(comment);
-      //   }
-      // }
+      var tools = getToolTable();
+      if (tools.getNumberOfTools() > 0) {
+        for (var i = 0; i < tools.getNumberOfTools(); ++i) {
+          var tool = tools.getTool(i);
+          var comment =
+            "T" +
+            toolFormat.format(tool.number) +
+            " " +
+            "D=" +
+            xyzFormat.format(tool.diameter) +
+            " " +
+            localize("CR") +
+            "=" +
+            xyzFormat.format(tool.cornerRadius);
+          if (tool.taperAngle > 0 && tool.taperAngle < Math.PI) {
+            comment +=
+              " " +
+              localize("TAPER") +
+              "=" +
+              taperFormat.format(tool.taperAngle) +
+              localize("deg");
+          }
+          if (zRanges[tool.number]) {
+            comment +=
+              " - " +
+              localize("ZMIN") +
+              "=" +
+              xyzFormat.format(zRanges[tool.number].getMinimum());
+          }
+          comment += " - " + getToolTypeName(tool.type);
+          writeComment(comment);
+        }
+      }
     }
   }
 }
@@ -4707,7 +4723,7 @@ function writeProbeCycle(cycle, x, y, z, P, F) {
 
 function printProbeResults() {
   // return currentSection.getParameter("printResults", 0) == 1;
-  return tru;
+  return true;
 }
 
 /** Convert approach to sign. */

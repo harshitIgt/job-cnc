@@ -252,8 +252,7 @@ global.setMachineConfiguration = function (machineConfig) {
 let sequenceNumber = 5;
 global.getProperty = function (property) {
   // prperty has to be defined
-  if (property === "sequenceNumberStart" || "showSequenceNumbers") {
-    sequenceNumber += 5;
+  if (property == "sequenceNumberStart" || "showSequenceNumbers") {
     return sequenceNumber;
   }
   if (property === "useParametricFeed") {

@@ -1,4 +1,5 @@
 const Tool = require("./tool");
+const { priorOutput } = require("../helper");
 
 class Section {
   // always returns true or false
@@ -39,6 +40,20 @@ class Section {
   getId = function () {
     return 0;
   };
+
+  // Returns the TCP mode used for the section when it was optimized for a machine configuration
+  getOptimizedTCPMode() {
+    return 1; // not implemented
+  }
+
+  getInitialPosition() {
+    return 1; // not implemented
+  }
+
+  //Returns the origin of the Model coordinate system
+  getModelOrigin() {
+    return priorOutput; // NS
+  }
 }
 
 global.Section = Section;

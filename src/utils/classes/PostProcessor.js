@@ -7,6 +7,8 @@ const { priorOutput } = require("../helper");
 const Format = require("./Format");
 const Modal = require("./Modal");
 const Variable = require("./Variable");
+const ToolTable = require("./ToolTable");
+const Vector = require("./Vector");
 
 //property will run only inside the onSection() and onSectionEnd() functions
 global.currentSection = new Section();
@@ -47,6 +49,7 @@ global.writeWords = function (...args) {
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
+  //console.log(wordString);
 };
 
 // writes multiple word's in  nc file
@@ -55,6 +58,7 @@ global.writeWords2 = function (...args) {
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
+  //console.log(wordString);
 };
 
 // it will return new variable
@@ -166,6 +170,19 @@ global.setCurrentABC = function () {
   return;
 };
 
+global.getToolTable = function () {
+  return new ToolTable();
+};
+
+global.getToolTypeName = function (tool) {
+  return "drill"; // ND
+};
+
+global.getFramePosition = function (position) {
+  const newFrame = new Vector(); //not clear with this property, so just sending properties
+  return newFrame;
+};
+
 //change (M06). (Not Sure)
 global.COMMAND_LOAD_TOOL = 06;
 global.COMMAND_COOLANT_OFF = 09;
@@ -175,6 +192,7 @@ global.COMMAND_OPTIONAL_STOP = 01;
 global.COMMAND_START_SPINDLE = 03; //right now fixed
 global.COMMAND_START_CHIP_TRANSPORT = 0;
 global.COMMAND_UNLOCK_MULTI_AXIS = 0;
+global.OPTIMIZE_NONE = 1; // ND
 
 //cycle
 global.cycle = 30; // dont know how will it work
