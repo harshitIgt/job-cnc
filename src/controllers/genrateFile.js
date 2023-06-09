@@ -21,8 +21,8 @@ const functions = async function (req, res) {
     }
     const funcFile = `functions.js`;
 
-    const context = vm.createContext({});
-    const mergedContext = { context, myModule: require("../utils/helper") };
+    // const context = vm.createContext({});
+    // const mergedContext = { context, myModule: require("../utils/helper") };
     //vm.runInNewContext(functionCode, mergedContext)
 
     fs.truncate(funcFile, 0, function (err) {
@@ -32,9 +32,9 @@ const functions = async function (req, res) {
     const file = fs.createWriteStream(funcFile);
 
     let resultString =
-      `const{ createFormat, createVariable } = require("./src/utils/index")\n` +
+      `require("./src/utils/index")\nconst Vector = require("./src/utils/classes/Vector");\n` +
       functionCode;
-    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes}`;
+    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes}`;
     file.write(resultString);
 
     setTimeout(() => {
@@ -42,6 +42,7 @@ const functions = async function (req, res) {
       res.status(StatusCodes.OK).render("index.ejs", { err });
     }, 3500);
   } catch (error) {
+    console.log(error);
     let err = error.message;
     res.status(StatusCodes.BAD_REQUEST).render({ err });
   }
@@ -91,7 +92,7 @@ const actions = async function (req, res) {
     fs.appendFile(
       filename,
       `const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes} = require('./functions.js')\n\n${actionCode}`,
+             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes} = require('./functions.js')\n\n${actionCode}`,
       (err) => {
         if (err) throw err;
       }

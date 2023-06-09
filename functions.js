@@ -1,6 +1,5 @@
-require("./src/utils/index");
+require("./src/utils/index")
 const Vector = require("./src/utils/classes/Vector");
-
 unit = "IN";
 DEG = `DEG`;
 description = "FANUC";
@@ -4914,21 +4913,4 @@ function setProbeAngleMethod() {
   probeVariables.outputRotationCodes = true;
 }
 // <<<<< INCLUDED FROM include_files/setProbeAngleMethod.cpi
-
-module.exports = {
-  onOpen,
-  onLinear,
-  onClose,
-  defineMachine,
-  onSection,
-  onSectionEnd,
-  onCircular,
-  onRapid,
-  onCycle,
-  onCycleEnd,
-  onCyclePoint,
-  onDwell,
-  onRapid5D,
-  onSpindleSpeed,
-  onRotateAxes,
-};
+module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes}
