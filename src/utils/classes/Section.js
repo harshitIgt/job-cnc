@@ -52,7 +52,15 @@ class Section {
 
   //Returns the origin of the Model coordinate system
   getModelOrigin() {
-    return priorOutput; // NS
+    return priorOutput; // ND
+  }
+
+  //Returns true if the section has any cycle.
+  hasAnyCycle() {}
+
+  //Returns the movements (as a mask) in use for the section (ND)
+  getMovements() {
+    return 1;
   }
 }
 

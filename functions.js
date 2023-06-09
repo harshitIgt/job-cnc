@@ -480,7 +480,7 @@ var settings = {
     eulerCalculationMethod: "standard", // ('standard' / 'machine') 'machine' adjusts euler angles to match the machines ABC orientation, machine configuration required
     cancelTiltFirst: true, // cancel tilted workplane prior to WCS (G54-G59) blocks
     useABCPrepositioning: false, // position ABC axes prior to tilted workplane blocks
-    forceMultiAxisIndexing: false, // force multi-axis indexing for 3D programs
+    forceMultiAxisIndexing: true, //for now// force multi-axis indexing for 3D programs
     optimizeType: undefined, // can be set to OPTIMIZE_NONE, OPTIMIZE_BOTH, OPTIMIZE_TABLES, OPTIMIZE_HEADS, OPTIMIZE_AXIS. 'undefined' uses legacy rotations
   },
   subprograms: {
@@ -720,7 +720,7 @@ function onSection() {
     retracted ||
     !lengthCompensationActive ||
     (!isFirstSection() && getPreviousSection().isMultiAxis());
-  writeInitialPositioning(initialPosition, isRequired);
+  // writeInitialPositioning(initialPosition, isRequired);
 
   // write parametric feedrate table
   if (typeof initializeParametricFeeds == "function") {
@@ -871,7 +871,7 @@ function onCommand(command) {
   }
 
   var stringId = getCommandStringId(command);
-  var mcode = mapCommand[stringId];
+  var mcode = 1;
   if (mcode != undefined) {
     writeBlock(mFormat.format(mcode));
   } else {
@@ -2071,9 +2071,9 @@ function initializeParametricFeeds(insertToolCall) {
     if (
       !insertToolCall &&
       activeMovements &&
-      getCurrentSectionId() > 0 &&
-      getPreviousSection().getPatternId() == currentSection.getPatternId() &&
-      currentSection.getPatternId() != 0
+      getCurrentSectionId() > 0
+      // && getPreviousSection().getPatternId() == currentSection.getPatternId() &&
+      // currentSection.getPatternId() != 0
     ) {
       return; // use the current feeds
     }
@@ -3533,17 +3533,18 @@ function setWorkPlane(abc) {
           setCurrentABC(machineABC);
         }
       }
-      if (abc.isNonZero()) {
+      // console.log("abc " + abc.isNonZero());
+      if (true) {
         gRotationModal.reset();
-        writeBlock(
-          gRotationModal.format(68.2),
-          "X" + xyzFormat.format(currentSection.workOrigin.x),
-          "Y" + xyzFormat.format(currentSection.workOrigin.y),
-          "Z" + xyzFormat.format(currentSection.workOrigin.z),
-          "I" + abcFormat.format(abc.x),
-          "J" + abcFormat.format(abc.y),
-          "K" + abcFormat.format(abc.z)
-        ); // set frame
+        // writeBlock(
+        //   gRotationModal.format(68.2),
+        //   "X" + xyzFormat.format(currentSection.workOrigin.x),
+        //   "Y" + xyzFormat.format(currentSection.workOrigin.y),
+        //   "Z" + xyzFormat.format(currentSection.workOrigin.z),
+        //   "I" + abcFormat.format(abc.x),
+        //   "J" + abcFormat.format(abc.y),
+        //   "K" + abcFormat.format(abc.z)
+        // ); // set frame
         writeBlock(gFormat.format(53.1)); // turn machine
       } else {
         if (!settings.workPlaneMethod.cancelTiltFirst) {
@@ -4215,24 +4216,24 @@ function getPointNumber() {
 
 function inspectionWriteCADTransform() {
   var cadOrigin = currentSection.getModelOrigin();
-  var cadWorkPlane = currentSection.getModelPlane().getTransposed();
-  var cadEuler = cadWorkPlane.getEuler2(EULER_XYZ_S);
+  // var cadWorkPlane = currentSection.getModelPlane().getTransposed();
+  //    var cadEuler = cadWorkPlane.getEuler2(EULER_XYZ_S);
   writeln(
     "DPRNT[G331" +
       "*N" +
-      getPointNumber() +
-      "*A" +
-      abcFormat.format(cadEuler.x) +
-      "*B" +
-      abcFormat.format(cadEuler.y) +
-      "*C" +
-      abcFormat.format(cadEuler.z) +
-      "*X" +
-      xyzFormat.format(-cadOrigin.x) +
-      "*Y" +
-      xyzFormat.format(-cadOrigin.y) +
-      "*Z" +
-      xyzFormat.format(-cadOrigin.z) +
+      // getPointNumber() +
+      // "*A" +
+      // abcFormat.format(cadEuler.x) +
+      // "*B" +
+      // abcFormat.format(cadEuler.y) +
+      // "*C" +
+      // abcFormat.format(cadEuler.z) +
+      // "*X" +
+      // xyzFormat.format(-cadOrigin.x) +
+      // "*Y" +
+      // xyzFormat.format(-cadOrigin.y) +
+      // "*Z" +
+      // xyzFormat.format(-cadOrigin.z) +
       "]"
   );
 }
@@ -4241,19 +4242,19 @@ function inspectionWriteWorkplaneTransform() {
   var orientation = machineConfiguration.isMultiAxisConfiguration()
     ? machineConfiguration.getOrientation(getCurrentDirection())
     : currentSection.workPlane;
-  var abc = orientation.getEuler2(EULER_XYZ_S);
-  writeln(
-    "DPRNT[G330" +
-      "*N" +
-      getPointNumber() +
-      "*A" +
-      abcFormat.format(abc.x) +
-      "*B" +
-      abcFormat.format(abc.y) +
-      "*C" +
-      abcFormat.format(abc.z) +
-      "*X0*Y0*Z0*I0*R0]"
-  );
+  // var abc = orientation.getEuler2(EULER_XYZ_S);
+  // writeln(
+  //   "DPRNT[G330" +
+  //     "*N" +
+  //     getPointNumber() +
+  //     "*A" +
+  //     abcFormat.format(abc.x) +
+  //     "*B" +
+  //     abcFormat.format(abc.y) +
+  //     "*C" +
+  //     abcFormat.format(abc.z) +
+  //     "*X0*Y0*Z0*I0*R0]"
+  // );
 }
 
 function writeProbingToolpathInformation(cycleDepth) {
@@ -4929,4 +4930,5 @@ module.exports = {
   onDwell,
   onRapid5D,
   onSpindleSpeed,
+  onRotateAxes,
 };

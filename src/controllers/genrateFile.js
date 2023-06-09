@@ -1,7 +1,15 @@
 const fs = require("fs");
-const vm = require("vm");
 const path = require("path");
 const { StatusCodes } = require("http-status-codes");
+
+const { NodeVM } = require("vm2");
+const vm = new NodeVM({
+  require: {
+    external: true,
+    context: "host",
+    root: "./functions.js",
+  },
+});
 
 const functions = async function (req, res) {
   try {
@@ -26,7 +34,7 @@ const functions = async function (req, res) {
     let resultString =
       `const{ createFormat, createVariable } = require("./src/utils/index")\n` +
       functionCode;
-    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell}`;
+    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes}`;
     file.write(resultString);
 
     setTimeout(() => {
@@ -83,20 +91,21 @@ const actions = async function (req, res) {
     fs.appendFile(
       filename,
       `const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D,onSpindleSpeed} = myModule\n\n${actionCode}`,
+             onCircular, onMovement, onParameter, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes} = require('./functions.js')\n\n${actionCode}`,
       (err) => {
         if (err) throw err;
       }
     );
 
-    delete require.cache[require.resolve("../utils")];
-
     fs.readFile(srcFile, "utf8", (err, data) => {
       if (err) throw err;
+
       const helperPath = "../utils/helper.js";
       delete require.cache[require.resolve(helperPath)];
+
       const filePath = "../../functions.js";
       delete require.cache[require.resolve(filePath)];
+
       const context = {
         console: console,
         myModule: require(filePath),
@@ -104,7 +113,7 @@ const actions = async function (req, res) {
         require: require,
       };
       try {
-        vm.runInNewContext(data, context, { timeout: 1000 });
+        vm.run(data);
       } catch (error) {
         //console.log(">>e", error);
         err = error.message;
@@ -120,15 +129,15 @@ const actions = async function (req, res) {
   }
 };
 
-function removeLastLine(string) {
-  const lines = string.split("\n");
-  if (lines.length <= 1) {
-    return "";
-  } else {
-    lines.pop();
-    lines.splice(0, 1);
-    return lines.join("\n");
-  }
-}
+// function removeLastLine(string) {
+//   const lines = string.split("\n");
+//   if (lines.length <= 1) {
+//     return "";
+//   } else {
+//     lines.pop();
+//     lines.splice(0, 1);
+//     return lines.join("\n");
+//   }
+// }
 
 module.exports = { functions, actions };

@@ -6,19 +6,23 @@ class Variable {
       prefix = "",
       force = false,
       onchange = "",
-      disable = false, // disable added by own it will help to disable function
+      disables = false, // disable added by own it will help to disable function
     },
     Format = {}
   ) {
     this.prefix = prefix;
     this.force = force;
     this.onchange = onchange;
-    this.disable = disable;
+    this.disables = disables;
     this.Format = Format; // little bit confusion on this but right now adding this
   }
 
   disable() {
-    this.disable ? (this.disable = false) : (this.disable = true);
+    this.disables ? (this.disables = false) : (this.disables = true);
+  }
+
+  enable() {
+    this.disables ? (this.disables = false) : (this.disables = true);
   }
 
   format(value) {
@@ -33,24 +37,18 @@ class Variable {
       if (value !== priorOutput.X) {
         previousVariableValue = value;
         priorOutput.X = value;
-      } else {
-        return "";
       }
     } else if (this.prefix === "Y") {
       //compare the previous Y variable value
       if (value !== priorOutput.Y) {
         previousVariableValue = value;
         priorOutput.Y = value;
-      } else {
-        return "";
       }
     } else if (this.prefix === "Z") {
       //compare the previous Z variable value
       if (value !== priorOutput.Z) {
         previousVariableValue = value;
         priorOutput.Z = value;
-      } else {
-        return "";
       }
     } else {
       previousVariableValue = value;
@@ -82,8 +80,6 @@ class Variable {
 
   //resets the variable value
   reset() {
-    this.prefix = "";
-
     this.suffix = "";
 
     this.force = false;

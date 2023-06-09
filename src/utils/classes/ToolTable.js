@@ -7,7 +7,7 @@ class ToolTable {
     return 1; // sending just one
   }
 
-  getTool() {
+  getTool(value) {
     return new Tool(); //returning tool object
   }
 }

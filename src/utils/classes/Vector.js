@@ -3,6 +3,17 @@ class Vector {
     (this.X = X), (this.Y = Y), (this.Z = Z);
   }
 
+  // Function to check if a vector has non-zero length
+  isNonZero(vector) {
+    // Calculate the length of the vector
+    const length = Math.sqrt(
+      vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z
+    );
+
+    // Return true if the length is non-zero, false otherwise
+    return length !== 0;
+  }
+
   //set the position
   setCoordinate(coordinate, value) {
     if (coordinate === 0) {
@@ -31,9 +42,9 @@ class Vector {
   // Returns the difference of the specified vectors
   static diff(left, right) {
     const diffVector = new Vector(
-      left.x - right.x,
-      left.y - right.y,
-      left.z - right.z
+      left.X - right.X,
+      left.Y - right.Y,
+      left.Z - right.Z
     );
 
     return diffVector;

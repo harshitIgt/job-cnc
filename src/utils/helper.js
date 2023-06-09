@@ -12,6 +12,8 @@ let priorOutput = {
   X: undefined,
   Y: undefined,
   Z: undefined,
+  AXIS_4: undefined,
+  AXIS_5: undefined,
   R: undefined,
   RCount: false,
 };

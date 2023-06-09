@@ -22,6 +22,21 @@ class MachineConfiguration {
     maximumSpindleSpeed: 1000,
   };
 
+  //Returns the X-coordinate home position
+  getHomePositionY() {
+    return priorOutput.X;
+  }
+
+  //Returns the Y-coordinate home position
+  getHomePositionX() {
+    return priorOutput.Y;
+  }
+
+  //Returns the Z-coordinate home position
+  getHomePositionZ() {
+    return priorOutput.Z;
+  }
+
   getCenterPositionX(id) {
     return this.configData.centerPositionX;
   }
@@ -178,10 +193,14 @@ class MachineConfiguration {
 
   //not found exect logic just sending vector (not implemented)
   getABCByPreference(orientation, current, controllingAxis, type, options) {
-    let ABCByPre = new Vector();
+    let ABCByPre = new Vector(0, 0, 0);
     return ABCByPre;
   }
 }
+
+global.clamp = function (min, value, max) {
+  return Math.min(Math.max(value, min), max);
+};
 
 global.MachineConfiguration = MachineConfiguration;
 

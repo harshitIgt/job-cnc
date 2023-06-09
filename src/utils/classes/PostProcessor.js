@@ -44,8 +44,18 @@ global.createModal = function (specifiers, format = undefined) {
 };
 
 // writes word in  nc file
+let i = 0;
 global.writeWords = function (...args) {
-  let wordString = Object.values(args[0]).join("");
+  let wordString;
+  if (args[0] == "/") {
+    wordString = args
+      .slice(1)
+      .map((obj) => Object.values(obj).join(""))
+      .join(" ");
+  } else {
+    wordString = args.map((obj) => Object.values(obj).join("")).join(" ");
+  }
+
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
@@ -179,20 +189,109 @@ global.getToolTypeName = function (tool) {
 };
 
 global.getFramePosition = function (position) {
-  const newFrame = new Vector(); //not clear with this property, so just sending properties
+  const newFrame = new Vector(0, 0, 0); //not clear with this property, so just sending properties
   return newFrame;
 };
 
+global.isSameDirection = function (vector1, vector2) {
+  return Vector.dot(vector1, vector2) > 1 - 1e-7;
+};
+
+//Returns true if the specified parameter has been defined globally
+global.hasGlobalParameter = function () {
+  return true; // we don't complete it for now
+};
+
+// Returns the first value of the specified global parameter
+global.getGlobalParameter = function (value, defaultValue = "") {
+  let globalParameters = [];
+  if (value in globalParameters) {
+    return globalParameters[value];
+  }
+
+  // Return the defaultValue if the parameter is not defined
+  return defaultValue;
+};
+
+//Returns true if the current section is the last section. (right now we are assuming current section is the last section is the last section)
+global.isLastSection = function () {
+  return true;
+};
+
+//Returns true if the output is being redirected(ND)
+global.isRedirecting = function () {
+  return false;
+};
+
+//Returns the current position
+global.getCurrentPosition = function () {
+  return new Vector(priorOutput.X, priorOutput.Y, priorOutput.Z);
+};
+
+// there are multiple types of cycleType but for testing adding one cycle
+global.cycleType = "probing - x";
+
 //change (M06). (Not Sure)
-global.COMMAND_LOAD_TOOL = 06;
-global.COMMAND_COOLANT_OFF = 09;
-global.COMMAND_COOLANT_ON = 08;
-global.COMMAND_STOP = 00;
-global.COMMAND_OPTIONAL_STOP = 01;
-global.COMMAND_START_SPINDLE = 03; //right now fixed
+global.COMMAND_LOAD_TOOL = 6;
+global.COMMAND_COOLANT_OFF = 9;
+global.COMMAND_COOLANT_ON = 8;
+global.COMMAND_STOP = 0;
+global.COMMAND_OPTIONAL_STOP = 1;
+global.COMMAND_START_SPINDLE = 3; //right now fixed
 global.COMMAND_START_CHIP_TRANSPORT = 0;
 global.COMMAND_UNLOCK_MULTI_AXIS = 0;
 global.OPTIMIZE_NONE = 1; // ND
+global.COMMAND_STOP_SPINDLE = 5;
+global.COMMAND_COOLANT_OFF = 9;
+
+// create but may not correct (Locks the 4th and 5th axes. This command is optional)
+global.COMMAND_LOCK_MULTI_AXIS = function () {
+  priorOutput.AXIS_4 = undefined;
+  priorOutput.AXIS_5 = undefined;
+};
+
+//Unlocks the 4th and 5th axes. This command is optional
+global.COMMAND_UNLOCK_MULTI_AXIS = function () {
+  priorOutput.AXIS_4 = 1;
+  priorOutput.AXIS_5 = 1;
+};
+
+global.COMMAND_STOP_CHIP_TRANSPORT = function () {
+  return true; // ND
+};
+
+global.COMMAND_STOP_CHIP_TRANSPORT = function () {
+  return true; // ND
+};
+global.COMMAND_BREAK_CONTROL = function () {
+  return true; // ND
+};
+global.COMMAND_TOOL_MEASURE = function () {
+  return true; // ND
+};
+global.COMMAND_PROBE_ON = function () {
+  return true; // ND
+};
+global.COMMAND_PROBE_OFF = function () {
+  return true; // ND
+};
+
+//Returns the string id for the specified command (ND)
+global.getCommandStringId = function (command) {
+  return Math.floor(Math.random() * 9000 + 9000);
+};
+
+//Called to invoke onRapid5D in the post engine. (ND)
+global.invokeOnRapid5D = function (x, y, z, dx, dy, dz) {
+  return true;
+};
+
+//
+global.MOVEMENT_HIGH_FEED = 1; // ND
+
+//
+global.highFeedMapping = 2;
+global.HIGH_FEED_NO_MAPPING = 2;
 
 //cycle
 global.cycle = 30; // dont know how will it work
