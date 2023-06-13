@@ -6,13 +6,41 @@ const Vector = require("./Vector");
 class MachineConfiguration {
   constructor(...args) {
     if (args.length === 0) {
-      this.axis = [];
+      this.axis = {
+        x: 0,
+        y: 0,
+        z: 0,
+        u: undefined,
+        v: undefined,
+        w: undefined,
+      };
     } else if (args.length === 1) {
-      this.axis = [args[0]];
+      this.axis = {
+        x: 0,
+        y: 0,
+        z: 0,
+        u: 0,
+        v: undefined,
+        w: undefined,
+      };
     } else if (args.length === 2) {
-      this.axis = [args[0], args[1]];
+      this.axis = this.axis = {
+        x: 0,
+        y: 0,
+        z: 0,
+        u: 0,
+        v: 0,
+        w: undefined,
+      };
     } else if (args.length === 3) {
-      this.axis = [args[0], args[1], args[2]];
+      this.axis = this.axis = {
+        x: 0,
+        y: 0,
+        z: 0,
+        u: 0,
+        v: 0,
+        w: 0,
+      };
     }
   }
   configData = {
@@ -107,9 +135,9 @@ class MachineConfiguration {
       this.axis[1] &&
       this.axis[2]
     ) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   }
   isReceived() {
@@ -164,9 +192,9 @@ class MachineConfiguration {
 
   //Returns the matrix for the specified ABC angles.
   getOrientation(abc) {
-    const a = abc.X;
-    const b = abc.Y;
-    const c = abc.Z;
+    const a = abc.x;
+    const b = abc.y;
+    const c = abc.z;
 
     // Calculate the matrix for the specified ABC angles
     const sinA = Math.sin(a);
@@ -193,10 +221,41 @@ class MachineConfiguration {
 
   //not found exect logic just sending vector (not implemented)
   getABCByPreference(orientation, current, controllingAxis, type, options) {
-    let ABCByPre = new Vector(0, 0, 0);
+    let ABCByPre = new Vector();
     return ABCByPre;
   }
+  setMultiAxisFeedrate(
+    feedMode,
+    maximumFeedrate,
+    feedType,
+    outputTolerance,
+    bpwRatio
+  ) {}
+
+  //Returns the multi-axis feed mode. Returns FEED_INVERSE_TIME, FEED_DPM or FEED_FPM(ND)
+  getMultiAxisFeedrateMode() {
+    return 1;
+  }
+  getMultiAxisFeedrateInverseTimeUnits() {
+    return 1;
+  }
+  getMultiAxisFeedrateDPMType() {
+    return 1;
+  }
+  getMultiAxisFeedrateMaximum() {
+    return 1;
+  }
+  getMultiAxisFeedrateBpwRatio() {
+    return 1;
+  }
+  getMultiAxisFeedrateOutputTolerance() {
+    return 1;
+  }
 }
+//ND
+global.FEED_INVERSE_TIME = 1;
+global.FEED_DPM = 1;
+global.FEED_FPM = 1;
 
 global.clamp = function (min, value, max) {
   return Math.min(Math.max(value, min), max);

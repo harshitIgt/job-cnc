@@ -9,6 +9,7 @@ const Modal = require("./Modal");
 const Variable = require("./Variable");
 const ToolTable = require("./ToolTable");
 const Vector = require("./Vector");
+const Tool = require("./tool");
 
 //property will run only inside the onSection() and onSectionEnd() functions
 global.currentSection = new Section();
@@ -95,9 +96,14 @@ global.isFirstSection = function () {
 //storing the parameters value in the array and getParameter function is updating the parameter's
 let parameterArray = [];
 global.getParameter = function (parameterName, defaultValue = undefined) {
+  for (let i of parameterArray) {
+    if (i === parameterName) {
+      return parameterArray[i];
+    }
+  }
   let parameterVlaue = { [parameterName]: `${defaultValue}` };
   parameterArray.push(parameterVlaue);
-  return parameterVlaue;
+  return defaultValue ? defaultValue : "";
 };
 
 //return true if parameter is present else return false
@@ -136,7 +142,7 @@ global.getFirstTool = function () {
 
 //attributes
 // it returns the current tool by it is currently return 1 (not detail information in docs)
-global.tool = 1;
+global.tool = new Tool();
 
 //coordinate index
 global.X = priorOutput.X;
@@ -155,7 +161,7 @@ global.isPolarModeActive = function () {
 
 // Returns the tool axis if the section is not optimized for the machine (ND)
 global.getCurrentDirection = function () {
-  return { X: 0, Y: 0, Z: 0 };
+  return new Vector();
 };
 
 //Returns the id of the current section. Returns -1 is no section is active
@@ -228,6 +234,11 @@ global.getCurrentPosition = function () {
   return new Vector(priorOutput.X, priorOutput.Y, priorOutput.Z);
 };
 
+//ND
+global.optimizeMachineAngles2 = function (optimizeType) {
+  return;
+};
+
 // there are multiple types of cycleType but for testing adding one cycle
 global.cycleType = "probing - x";
 
@@ -278,6 +289,7 @@ global.COMMAND_PROBE_OFF = function () {
 
 //Returns the string id for the specified command (ND)
 global.getCommandStringId = function (command) {
+  if (command <= 5) return COMMAND_STOP_SPINDLE; // temporarily fix
   return Math.floor(Math.random() * 9000 + 9000);
 };
 
@@ -287,14 +299,48 @@ global.invokeOnRapid5D = function (x, y, z, dx, dy, dz) {
 };
 
 //
+global.onUnsupportedCoolant = function (coolant) {
+  return;
+};
+
+//
 global.MOVEMENT_HIGH_FEED = 1; // ND
 
 //
 global.highFeedMapping = 2;
 global.HIGH_FEED_NO_MAPPING = 2;
 
+// Specifies the capability flags. (ND how to set the capability)
+global.CAPABILITY_MILLING = 1;
+global.CAPABILITY_TURNING = 2;
+global.CAPABILITY_JET = 4;
+global.CAPABILITY_SETUP_SHEET = 8;
+global.CAPABILITY_INTERMEDIATE = 16;
+global.CAPABILITY_CASCADING = 32;
+global.CAPABILITY_MACHINE_SIMULATION = 64;
+
+// default unit IN
+global.unit = `IN`;
+global.DEG = `DEG`;
+global.description = "FANUC";
+global.vendor = "Fanuc";
+
+//
+global.ENABLE_WCS = 1; // dont know how will it work
+
 //cycle
 global.cycle = 30; // dont know how will it work
+
+//mode
+global.COOLANT_FLOOD = "COOLANT_FLOOD";
+global.COOLANT_MIST = "COOLANT_MIST";
+global.COOLANT_THROUGH_TOOL = "COOLANT_THROUGH_TOOL";
+global.COOLANT_AIR = "COOLANT_AIR";
+global.COOLANT_AIR_THROUGH_TOOL = "COOLANT_AIR_THROUGH_TOOL";
+global.COOLANT_SUCTION = "COOLANT_SUCTION";
+global.COOLANT_FLOOD_MIST = "COOLANT_FLOOD_MIST";
+global.COOLANT_FLOOD_THROUGH_TOOL = "COOLANT_FLOOD_THROUGH_TOOL";
+global.COOLANT_OFF = "COOLANT_OFF";
 
 module.exports = {
   currentSection,

@@ -1,7 +1,17 @@
 require("./src/utils/index")
 const Vector = require("./src/utils/classes/Vector");
-unit = "IN";
-DEG = `DEG`;
+/**
+  Copyright (C) 2012-2023 by Autodesk, Inc.
+  All rights reserved.
+
+  FANUC post processor configuration.
+
+  $Revision: 44066 595dc754de98319ddce25b7bc7c15246072fce54 $
+  $Date: 2023-05-15 12:25:05 $
+
+  FORKID {04622D27-72F0-45d4-85FB-DB346FD1AE22}
+*/
+
 description = "FANUC";
 vendor = "Fanuc";
 vendorUrl = "http://www.fanuc.com";
@@ -15,7 +25,7 @@ extension = "nc";
 programNameIsInteger = true;
 setCodePage("ascii");
 
-//capabilities = CAPABILITY_MILLING | CAPABILITY_MACHINE_SIMULATION;
+capabilities = CAPABILITY_MILLING | CAPABILITY_MACHINE_SIMULATION;
 tolerance = spatial(0.002, MM);
 
 minimumChordLength = spatial(0.25, MM);
@@ -274,7 +284,6 @@ properties = {
     scope: "post",
   },
 };
-getPropertyValues(properties);
 
 // wcs definiton
 wcsDefinitions = {
@@ -423,15 +432,15 @@ var settings = {
     // {id: COOLANT_THROUGH_TOOL, on: [8, 88], off: [9, 89]}
     // {id: COOLANT_THROUGH_TOOL, on: "M88 P3 (myComment)", off: "M89"}
     coolants: [
-      { id: COOLANT_FLOOD, on: 8 },
-      { id: COOLANT_MIST },
-      { id: COOLANT_THROUGH_TOOL, on: 88, off: 89 },
-      { id: COOLANT_AIR },
-      { id: COOLANT_AIR_THROUGH_TOOL },
-      { id: COOLANT_SUCTION },
-      { id: COOLANT_FLOOD_MIST },
-      { id: COOLANT_FLOOD_THROUGH_TOOL, on: [8, 88], off: [9, 89] },
-      { id: COOLANT_OFF, off: 9 },
+      { id: "COOLANT_FLOOD", on: 8 },
+      { id: "COOLANT_MIST" },
+      { id: "COOLANT_THROUGH_TOOL", on: 88, off: 89 },
+      { id: "COOLANT_AIR" },
+      { id: "COOLANT_AIR_THROUGH_TOOL" },
+      { id: "COOLANT_SUCTION" },
+      { id: "COOLANT_FLOOD_MIST" },
+      { id: "COOLANT_FLOOD_THROUGH_TOOL", on: [8, 88], off: [9, 89] },
+      { id: "COOLANT_OFF", off: 9 },
     ],
     singleLineCoolant: false, // specifies to output multiple coolant codes in one line rather than in separate lines
   },
@@ -440,7 +449,7 @@ var settings = {
     semi: 4, // semi-roughing level for smoothing in automatic mode
     semifinishing: 7, // semi-finishing level for smoothing in automatic mode
     finishing: 10, // finishing level for smoothing in automatic mode
-    thresholdRoughing: 0.5, // operations with stock/tolerance above that threshold will use roughing level in automatic mode
+    thresholdRoughing: toPreciseUnit(0.5, MM), // operations with stock/tolerance above that threshold will use roughing level in automatic mode
     thresholdFinishing: toPreciseUnit(0.05, MM), // operations with stock/tolerance below that threshold will use finishing level in automatic mode
     thresholdSemiFinishing: toPreciseUnit(0.1, MM), // operations with stock/tolerance above finishing and below threshold roughing that threshold will use semi finishing level in automatic mode
 
@@ -475,11 +484,11 @@ var settings = {
   },
   workPlaneMethod: {
     useTiltedWorkplane: true, // specifies that tilted workplanes should be used (ie. G68.2, G254, PLANE SPATIAL, CYCLE800), can be overwritten by property
-    eulerConvention: EULER_ZXZ_R, // specifies the euler convention (ie EULER_XYZ_R), set to undefined to use machine angles for TWP commands ('undefined' requires machine configuration)
+    eulerConvention: 1, // specifies the euler convention (ie EULER_XYZ_R), set to undefined to use machine angles for TWP commands ('undefined' requires machine configuration)
     eulerCalculationMethod: "standard", // ('standard' / 'machine') 'machine' adjusts euler angles to match the machines ABC orientation, machine configuration required
     cancelTiltFirst: true, // cancel tilted workplane prior to WCS (G54-G59) blocks
     useABCPrepositioning: false, // position ABC axes prior to tilted workplane blocks
-    forceMultiAxisIndexing: true, //for now// force multi-axis indexing for 3D programs
+    forceMultiAxisIndexing: false, // force multi-axis indexing for 3D programs
     optimizeType: undefined, // can be set to OPTIMIZE_NONE, OPTIMIZE_BOTH, OPTIMIZE_TABLES, OPTIMIZE_HEADS, OPTIMIZE_AXIS. 'undefined' uses legacy rotations
   },
   subprograms: {
@@ -512,7 +521,6 @@ var settings = {
 
 function onOpen() {
   // define and enable machine configuration
-
   if (typeof defineMachine == "function") {
     defineMachine(); // hardcoded machine configuration
   }
@@ -536,10 +544,10 @@ function onOpen() {
     kOutput = createReferenceVariable({ prefix: "K", force: true }, xyzFormat);
   }
   if (getProperty("useG95")) {
-    // if (getProperty("useParametricFeed")) {
-    //   error(localize("Parametric feed is not supported when using G95."));
-    //   return;
-    // }
+    //if (getProperty("useParametricFeed")) {
+    // error(localize("Parametric feed is not supported when using G95."));
+    //return;
+    //}
     feedFormat = createFormat({
       decimals: unit == MM ? 4 : 5,
       forceDecimal: true,
@@ -657,7 +665,7 @@ function onSection() {
     if (insertToolCall && !isFirstSection()) {
       onCommand(COMMAND_STOP_SPINDLE); // stop spindle before retract during tool change
     }
-    // writeRetract(Z); // retract
+    writeRetract(Z); // retract
     if (isFirstSection() && machineConfiguration.isMultiAxisConfiguration()) {
       setWorkPlane(new Vector(0, 0, 0)); // reset ABC axes / working plane
       forceABC();
@@ -705,6 +713,7 @@ function onSection() {
   onCommand(COMMAND_START_CHIP_TRANSPORT);
 
   var abc = defineWorkPlane(currentSection, true);
+  //console.log("abc1: " + abc);
 
   setProbeAngle(); // output probe angle rotations if required
 
@@ -719,7 +728,7 @@ function onSection() {
     retracted ||
     !lengthCompensationActive ||
     (!isFirstSection() && getPreviousSection().isMultiAxis());
-  // writeInitialPositioning(initialPosition, isRequired);
+  writeInitialPositioning(initialPosition, isRequired);
 
   // write parametric feedrate table
   if (typeof initializeParametricFeeds == "function") {
@@ -1112,7 +1121,7 @@ function activateMachine() {
       }
     }
   } else {
-    optimizeMachineAngles2(OPTIMIZE_AXIS);
+    optimizeMachineAngles2((OPTIMIZE_AXIS = 1));
   }
 }
 
@@ -1390,7 +1399,7 @@ function writeBlock() {
   ) {
     error(localize("Optional blocks are not supported by this post."));
   }
-  if (getProperty("showSequenceNumbers") !== false) {
+  if (getProperty("showSequenceNumbers") == "true") {
     if (
       sequenceNumber == undefined ||
       sequenceNumber >= settings.maximumSequenceNumber
@@ -1696,12 +1705,14 @@ function defineMachine() {
     if (machineConfiguration.isMultiAxisConfiguration()) {
       machineConfiguration.setMultiAxisFeedrate(
         useTCP
-          ? FEED_FPM
+          ? (FEED_FPM = 1)
           : getProperty("useDPMFeeds")
-          ? FEED_DPM
-          : FEED_INVERSE_TIME,
+          ? (FEED_DPM = 1)
+          : (FEED_INVERSE_TIME = 1),
         9999.99, // maximum output value for inverse time feed rates
-        getProperty("useDPMFeeds") ? DPM_COMBINATION : INVERSE_MINUTES, // INVERSE_MINUTES/INVERSE_SECONDS or DPM_COMBINATION/DPM_STANDARD
+        getProperty("useDPMFeeds")
+          ? (DPM_COMBINATION = 1)
+          : (INVERSE_MINUTES = 1), // INVERSE_MINUTES/INVERSE_SECONDS or DPM_COMBINATION/DPM_STANDARD
         0.5, // tolerance to determine when the DPM feed has changed
         1.0 // ratio of rotary accuracy to linear accuracy for DPM calculations
       );
@@ -1754,7 +1765,6 @@ function defineWorkPlane(_section, _setWorkPlane) {
     } else {
       abc = getWorkPlaneMachineABC(_section, true);
     }
-
     if (_setWorkPlane) {
       if (_section.isMultiAxis() || isPolarModeActive()) {
         // 4-5x simultaneous operations
@@ -1904,9 +1914,9 @@ function unwindABC(abc) {
 
       // only use the active axis in calculations
       var tempABC = new Vector(0, 0, 0);
-      tempABC.setCoordinate(1, 2);
+      tempABC.setCoordinate(j, abc.getCoordinate(j));
       var tempCurrent = new Vector(0, 0, 0); // only use the active axis in calculations
-      // tempCurrent.setCoordinate(1, currentDirection.getCoordinate(2));
+      tempCurrent.setCoordinate(j, currentDirection.getCoordinate(j));
       var orientation = machineConfiguration.getOrientation(tempCurrent);
 
       // get closest angle without respecting 'reset' flag
@@ -1916,10 +1926,10 @@ function unwindABC(abc) {
         tempABC,
         ABC,
         PREFER_PREFERENCE,
-        (ENABLE_WCS = 1)
+        ENABLE_WCS
       );
       var distanceABC = abcFormat.getResultingValue(
-        Math.abs(Vector.diff(getCurrentDirection(), abc).getCoordinate(1))
+        Math.abs(Vector.diff(getCurrentDirection(), abc).getCoordinate(j))
       );
 
       // calculate distance from calculated abc to closest abc
@@ -2070,9 +2080,9 @@ function initializeParametricFeeds(insertToolCall) {
     if (
       !insertToolCall &&
       activeMovements &&
-      getCurrentSectionId() > 0
-      // && getPreviousSection().getPatternId() == currentSection.getPatternId() &&
-      // currentSection.getPatternId() != 0
+      getCurrentSectionId() > 0 &&
+      getPreviousSection().getPatternId() == currentSection.getPatternId() &&
+      currentSection.getPatternId() != 0
     ) {
       return; // use the current feeds
     }
@@ -2376,7 +2386,6 @@ function getCoolantCodes(coolant, format) {
     coolantOff = coolantCodes.off;
     m = coolantCodes.on;
   }
-  m = 1;
   if (!m) {
     onUnsupportedCoolant(coolant);
     m = 9;
@@ -2544,18 +2553,18 @@ function writeProgramHeader() {
   var vendor = machineConfiguration.getVendor();
   var model = machineConfiguration.getModel();
   var mDescription = machineConfiguration.getDescription();
-  // if (getProperty("writeMachine") && (vendor || model || mDescription)) {
-  //   writeComment(localize("Machine"));
-  //   if (vendor) {
-  //     writeComment("  " + localize("vendor") + ": " + vendor);
-  //   }
-  //   if (model) {
-  //     writeComment("  " + localize("model") + ": " + model);
-  //   }
-  //   if (mDescription) {
-  //     writeComment("  " + localize("description") + ": "  + mDescription);
-  //   }
-  // }
+  if (getProperty("writeMachine") && (vendor || model || mDescription)) {
+    writeComment(localize("Machine"));
+    if (vendor) {
+      writeComment("  " + localize("vendor") + ": " + vendor);
+    }
+    if (model) {
+      writeComment("  " + localize("model") + ": " + model);
+    }
+    if (mDescription) {
+      writeComment("  " + localize("description") + ": " + mDescription);
+    }
+  }
 
   // dump tool information
   if (getProperty("writeTools")) {
@@ -3180,7 +3189,7 @@ function onRapid(_x, _y, _z) {
       );
       return;
     }
-    writeBlock(x, y, z);
+    writeBlock(gMotionModal.format(0), x, y, z);
     forceFeed();
   }
 }
@@ -3532,18 +3541,18 @@ function setWorkPlane(abc) {
           setCurrentABC(machineABC);
         }
       }
-      // console.log("abc " + abc.isNonZero());
-      if (true) {
+      if (abc.isNonZero()) {
         gRotationModal.reset();
-        // writeBlock(
-        //   gRotationModal.format(68.2),
-        //   "X" + xyzFormat.format(currentSection.workOrigin.x),
-        //   "Y" + xyzFormat.format(currentSection.workOrigin.y),
-        //   "Z" + xyzFormat.format(currentSection.workOrigin.z),
-        //   "I" + abcFormat.format(abc.x),
-        //   "J" + abcFormat.format(abc.y),
-        //   "K" + abcFormat.format(abc.z)
-        // ); // set frame
+        //console.log("abc", abc);
+        writeBlock(
+          gRotationModal.format(68.2),
+          "X" + xyzFormat.format(currentSection.workOrigin.x),
+          "Y" + xyzFormat.format(currentSection.workOrigin.y),
+          "Z" + xyzFormat.format(currentSection.workOrigin.z),
+          "I" + abcFormat.format(abc.x),
+          "J" + abcFormat.format(abc.y),
+          "K" + abcFormat.format(abc.z)
+        ); // set frame
         writeBlock(gFormat.format(53.1)); // turn machine
       } else {
         if (!settings.workPlaneMethod.cancelTiltFirst) {
@@ -3572,7 +3581,6 @@ function writeRetract() {
       // cancel rotation before retracting
       cancelWorkPlane(true);
     }
-    retract.method = "G28"; // TEMPARY FIX
     switch (retract.method) {
       case "G28":
         forceModals(gMotionModal, gAbsIncModal);
@@ -3650,6 +3658,10 @@ function writeInitialPositioning(position, isRequired, codes1, codes2) {
       getSetting("workPlaneMethod.useTiltedWorkplane", false) &&
       tcp.isSupportedByOperation
     ) {
+      // console.log(
+      //   `machineConfiguration`,
+      //   machineConfiguration.isMultiAxisConfiguration()
+      // );
       var W = machineConfiguration.isMultiAxisConfiguration()
         ? machineConfiguration.getOrientation(getCurrentDirection())
         : Matrix.getOrientationFromDirection(getCurrentDirection());
@@ -4215,24 +4227,24 @@ function getPointNumber() {
 
 function inspectionWriteCADTransform() {
   var cadOrigin = currentSection.getModelOrigin();
-  // var cadWorkPlane = currentSection.getModelPlane().getTransposed();
-  //    var cadEuler = cadWorkPlane.getEuler2(EULER_XYZ_S);
+  var cadWorkPlane = currentSection.getModelPlane().getTransposed();
+  var cadEuler = cadWorkPlane.getEuler2((EULER_XYZ_S = 1));
   writeln(
     "DPRNT[G331" +
       "*N" +
-      // getPointNumber() +
-      // "*A" +
-      // abcFormat.format(cadEuler.x) +
-      // "*B" +
-      // abcFormat.format(cadEuler.y) +
-      // "*C" +
-      // abcFormat.format(cadEuler.z) +
-      // "*X" +
-      // xyzFormat.format(-cadOrigin.x) +
-      // "*Y" +
-      // xyzFormat.format(-cadOrigin.y) +
-      // "*Z" +
-      // xyzFormat.format(-cadOrigin.z) +
+      getPointNumber() +
+      "*A" +
+      abcFormat.format(cadEuler.x) +
+      "*B" +
+      abcFormat.format(cadEuler.y) +
+      "*C" +
+      abcFormat.format(cadEuler.z) +
+      "*X" +
+      xyzFormat.format(-cadOrigin.x) +
+      "*Y" +
+      xyzFormat.format(-cadOrigin.y) +
+      "*Z" +
+      xyzFormat.format(-cadOrigin.z) +
       "]"
   );
 }
@@ -4241,19 +4253,19 @@ function inspectionWriteWorkplaneTransform() {
   var orientation = machineConfiguration.isMultiAxisConfiguration()
     ? machineConfiguration.getOrientation(getCurrentDirection())
     : currentSection.workPlane;
-  // var abc = orientation.getEuler2(EULER_XYZ_S);
-  // writeln(
-  //   "DPRNT[G330" +
-  //     "*N" +
-  //     getPointNumber() +
-  //     "*A" +
-  //     abcFormat.format(abc.x) +
-  //     "*B" +
-  //     abcFormat.format(abc.y) +
-  //     "*C" +
-  //     abcFormat.format(abc.z) +
-  //     "*X0*Y0*Z0*I0*R0]"
-  // );
+  var abc = orientation.getEuler2(EULER_XYZ_S);
+  writeln(
+    "DPRNT[G330" +
+      "*N" +
+      getPointNumber() +
+      "*A" +
+      abcFormat.format(abc.x) +
+      "*B" +
+      abcFormat.format(abc.y) +
+      "*C" +
+      abcFormat.format(abc.z) +
+      "*X0*Y0*Z0*I0*R0]"
+  );
 }
 
 function writeProbingToolpathInformation(cycleDepth) {
@@ -4723,7 +4735,7 @@ function writeProbeCycle(cycle, x, y, z, P, F) {
 
 function printProbeResults() {
   // return currentSection.getParameter("printResults", 0) == 1;
-  return true;
+  return true; // console.log
 }
 
 /** Convert approach to sign. */
@@ -4913,4 +4925,4 @@ function setProbeAngleMethod() {
   probeVariables.outputRotationCodes = true;
 }
 // <<<<< INCLUDED FROM include_files/setProbeAngleMethod.cpi
-module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes}
+module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine}

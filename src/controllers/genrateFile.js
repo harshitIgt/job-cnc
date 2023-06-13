@@ -34,7 +34,7 @@ const functions = async function (req, res) {
     let resultString =
       `require("./src/utils/index")\nconst Vector = require("./src/utils/classes/Vector");\n` +
       functionCode;
-    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes}`;
+    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine}`;
     file.write(resultString);
 
     setTimeout(() => {
@@ -42,7 +42,7 @@ const functions = async function (req, res) {
       res.status(StatusCodes.OK).render("index.ejs", { err });
     }, 3500);
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     let err = error.message;
     res.status(StatusCodes.BAD_REQUEST).render({ err });
   }
@@ -73,7 +73,7 @@ const actions = async function (req, res) {
         // };
         // vm.runInNewContext(file, myContext);
       } catch (error) {
-        //console.log("eerrr", error);
+        //console.log("eerrr:", error);
         err = error.message;
         res.render("index.ejs", { err });
         return;
@@ -107,12 +107,12 @@ const actions = async function (req, res) {
       const filePath = "../../functions.js";
       delete require.cache[require.resolve(filePath)];
 
-      const context = {
-        console: console,
-        myModule: require(filePath),
-        exports: {},
-        require: require,
-      };
+      // const context = {
+      //   console: console,
+      //   myModule: require(filePath),
+      //   exports: {},
+      //   require: require,
+      // };
       try {
         vm.run(data);
       } catch (error) {

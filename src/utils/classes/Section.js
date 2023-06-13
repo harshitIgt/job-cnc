@@ -1,5 +1,7 @@
 const Tool = require("./tool");
 const { priorOutput } = require("../helper");
+const Vector = require("./Vector");
+const Matrix = require("./Matrix");
 
 class Section {
   // always returns true or false
@@ -52,7 +54,7 @@ class Section {
 
   //Returns the origin of the Model coordinate system
   getModelOrigin() {
-    return priorOutput; // ND
+    return { x: priorOutput.X, y: priorOutput.Y, z: priorOutput.Z }; // ND
   }
 
   //Returns true if the section has any cycle.
@@ -61,6 +63,16 @@ class Section {
   //Returns the movements (as a mask) in use for the section (ND)
   getMovements() {
     return 1;
+  }
+
+  workOrigin = {
+    x: 10,
+    y: 11,
+    z: 12,
+  };
+
+  getModelPlane() {
+    return new Matrix();
   }
 }
 

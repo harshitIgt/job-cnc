@@ -1,7 +1,9 @@
+const Vector = require("./Vector");
+
 class Axis {
   constructor(...args) {
     if (args.length === 0) {
-      this._axis = [0, 0, 0]; // for testing
+      (this.X = 0), (this.Y = 0), (this.Z = 0);
     } else if (args.length === 4) {
       this._table = _table;
       this._axis = _axis;
@@ -18,11 +20,24 @@ class Axis {
     }
   }
 
+  // NS
+  getCoordinate() {
+    if (this.X === 0) {
+      return 0;
+    } else if (this.Y === 0) {
+      return 1;
+    } else if (this.Z === 0) {
+      return 2;
+    } else {
+      return 0; // Invalid axis
+    }
+  }
+
   isEnabled() {
     if (
-      (this._axis[0] < 0 && this._axis[0] > 2) ||
-      (this._axis[1] < 0 && this._axis[1] > 2) ||
-      (this._axis[2] < 0 && this._axis[2] > 2)
+      (this.X < 0 && this.X > 2) ||
+      (this.Y < 0 && this.Y > 2) ||
+      (this.Z < 0 && this.Z > 2)
     ) {
       return false;
     }
@@ -33,6 +48,11 @@ class Axis {
     if (this._axis) {
       return this._axis;
     } else return -1;
+  }
+
+  //Returns true if TCP is enabled for the rotary axis.(ND)
+  isTCPEnabled() {
+    return true;
   }
 }
 

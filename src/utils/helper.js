@@ -252,21 +252,25 @@ global.setMachineConfiguration = function (machineConfig) {
 };
 
 let sequenceNumber = 5;
-global.getProperty = function (property) {
+global.getProperty = function (propertyName, defaultValue = undefined) {
   // prperty has to be defined
-  if (property == "sequenceNumberStart" || "showSequenceNumbers") {
-    return sequenceNumber;
+  // if (propertyName === "sequenceNumberStart" || "showSequenceNumbers") {
+  //   return sequenceNumber;
+  // }
+  for (let key in properties) {
+    if (key === propertyName) {
+      return properties[key].value;
+    }
   }
-  if (property === "useParametricFeed") {
-    return false;
-  }
-  return `true`;
+  return defaultValue;
 };
 
 //there is problem we have to handle
 global.formatWords = function (...args) {
-  let wordString = Object.values(args[0]).join("");
-  return wordString;
+  if (args[0]) {
+    let wordString = Object.values(args[0]).join("");
+    return wordString;
+  }
 };
 
 // it sets the word separated
@@ -305,10 +309,10 @@ global.getNumberOfSections = function () {
   return matches ? matches : 0;
 };
 
-let properties;
-global.getPropertyValues = function (value) {
-  properties = value;
-};
+// let properties;
+// global.getPropertyValues = function (value) {
+//   properties = value;
+// };
 
 global.setProperty = function (propertyName, value) {
   if (properties[propertyName]) {
@@ -350,5 +354,4 @@ module.exports = {
   filterText,
   getNumberOfSections,
   priorOutput,
-  getPropertyValues,
 };
