@@ -251,7 +251,6 @@ global.setMachineConfiguration = function (machineConfig) {
   return true;
 };
 
-let sequenceNumber = 5;
 global.getProperty = function (propertyName, defaultValue = undefined) {
   // prperty has to be defined
   // if (propertyName === "sequenceNumberStart" || "showSequenceNumbers") {

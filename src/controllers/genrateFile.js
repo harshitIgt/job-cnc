@@ -3,13 +3,6 @@ const path = require("path");
 const { StatusCodes } = require("http-status-codes");
 
 const { NodeVM } = require("vm2");
-const vm = new NodeVM({
-  require: {
-    external: true,
-    context: "host",
-    root: "./functions.js",
-  },
-});
 
 const functions = async function (req, res) {
   try {
@@ -20,10 +13,6 @@ const functions = async function (req, res) {
       functionCode = req.body;
     }
     const funcFile = `functions.js`;
-
-    // const context = vm.createContext({});
-    // const mergedContext = { context, myModule: require("../utils/helper") };
-    //vm.runInNewContext(functionCode, mergedContext)
 
     fs.truncate(funcFile, 0, function (err) {
       if (err) throw err;
@@ -42,7 +31,7 @@ const functions = async function (req, res) {
       res.status(StatusCodes.OK).render("index.ejs", { err });
     }, 3500);
   } catch (error) {
-    //console.log(error);
+    console.log(error);
     let err = error.message;
     res.status(StatusCodes.BAD_REQUEST).render({ err });
   }
@@ -62,22 +51,6 @@ const actions = async function (req, res) {
       err = "Please upload file";
       res.render("index.ejs", { err });
       return;
-    } else {
-      try {
-        //let compiledFunctionFile = removeLastLine(file);
-        // const myContext = {
-        //   require: (moduleName) => {
-        //     const modulePath = path.join(__dirname, "../utils/index");
-        //     return require(modulePath);
-        //   },
-        // };
-        // vm.runInNewContext(file, myContext);
-      } catch (error) {
-        //console.log("eerrr:", error);
-        err = error.message;
-        res.render("index.ejs", { err });
-        return;
-      }
     }
 
     // change the size of the files (empty files)
@@ -98,25 +71,22 @@ const actions = async function (req, res) {
       }
     );
 
+    deleteFileCache();
+
     fs.readFile(srcFile, "utf8", (err, data) => {
       if (err) throw err;
 
-      const helperPath = "../utils/helper.js";
-      delete require.cache[require.resolve(helperPath)];
-
-      const filePath = "../../functions.js";
-      delete require.cache[require.resolve(filePath)];
-
-      // const context = {
-      //   console: console,
-      //   myModule: require(filePath),
-      //   exports: {},
-      //   require: require,
-      // };
       try {
+        const vm = new NodeVM({
+          require: {
+            external: true,
+            context: "host",
+            root: "./functions.js",
+          },
+        });
         vm.run(data);
       } catch (error) {
-        //console.log(">>e", error);
+        console.log(">>e", error);
         err = error.message;
         res.render("index.ejs", { err });
         return;
@@ -130,15 +100,12 @@ const actions = async function (req, res) {
   }
 };
 
-// function removeLastLine(string) {
-//   const lines = string.split("\n");
-//   if (lines.length <= 1) {
-//     return "";
-//   } else {
-//     lines.pop();
-//     lines.splice(0, 1);
-//     return lines.join("\n");
-//   }
-// }
+function deleteFileCache() {
+  const helperPath = "../utils/helper.js";
+  delete require.cache[require.resolve(helperPath)];
+
+  const filePath = "../../functions.js";
+  delete require.cache[require.resolve(filePath)];
+}
 
 module.exports = { functions, actions };

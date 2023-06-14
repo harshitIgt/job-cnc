@@ -287,6 +287,20 @@ global.COMMAND_PROBE_OFF = function () {
   return true; // ND
 };
 
+//Check if the current angle is exactly 360 degrees
+let currentAngle = 60; // we are assumming this
+global.isFullCircle = function () {
+  if (currentAngle === 360) {
+    return true;
+  }
+
+  return false;
+};
+//Returns the circular plane. Returns -1 is the plane is not in a primary plane.(ND)
+global.getCircularPlane = function () {
+  return 1;
+};
+global.PLANE_XY = 1; // ND
 //Returns the string id for the specified command (ND)
 global.getCommandStringId = function (command) {
   if (command <= 5) return COMMAND_STOP_SPINDLE; // temporarily fix

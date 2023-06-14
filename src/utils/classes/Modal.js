@@ -45,8 +45,6 @@ class Modal {
 
   // reset all object properties
   reset() {
-    this.prefix = "";
-
     this.suffix = "";
 
     this.force = false;
