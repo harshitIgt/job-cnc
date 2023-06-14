@@ -239,6 +239,11 @@ global.optimizeMachineAngles2 = function (optimizeType) {
   return;
 };
 
+//ND
+global.invokeOnRapid = function (x, y, z) {
+  return false;
+};
+
 // there are multiple types of cycleType but for testing adding one cycle
 global.cycleType = "probing - x";
 
@@ -254,6 +259,9 @@ global.COMMAND_UNLOCK_MULTI_AXIS = 0;
 global.OPTIMIZE_NONE = 1; // ND
 global.COMMAND_STOP_SPINDLE = 5;
 global.COMMAND_COOLANT_OFF = 9;
+
+//ND
+global.radiusCompensation = 1;
 
 // create but may not correct (Locks the 4th and 5th axes. This command is optional)
 global.COMMAND_LOCK_MULTI_AXIS = function () {

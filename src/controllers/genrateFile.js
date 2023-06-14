@@ -23,7 +23,7 @@ const functions = async function (req, res) {
     let resultString =
       `require("./src/utils/index")\nconst Vector = require("./src/utils/classes/Vector");\n` +
       functionCode;
-    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine}`;
+    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine,onCommand,onLinear5D,onPassThrough,onReturnFromSafeRetractPosition,onComment,onRadiusCompensation ,onMoveToSafeRetractPosition}`;
     file.write(resultString);
 
     setTimeout(() => {
@@ -65,7 +65,7 @@ const actions = async function (req, res) {
     fs.appendFile(
       filename,
       `const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes} = require('./functions.js')\n\n${actionCode}`,
+             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, onRadiusCompensation, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes,onCommand,onLinear5D,onPassThrough, onRewindMachineEntry,onMoveToSafeRetractPosition,onReturnFromSafeRetractPosition,onComment} = require('./functions.js')\n\n${actionCode}`,
       (err) => {
         if (err) throw err;
       }
