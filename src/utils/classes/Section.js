@@ -33,7 +33,7 @@ class Section {
     return Tool;
   }
 
-  //Returns true if the section has been optimized for a machine configuration
+  //Returns true if the section has been isOptimizedForMachine for a machine configuration
   isOptimizedForMachine() {
     return true; // don't found any resources
   }
@@ -48,8 +48,9 @@ class Section {
     return 1; // not implemented
   }
 
+  //Returns the initial position for the section.
   getInitialPosition() {
-    return 1; // not implemented
+    return new Vector(priorOutput.X, priorOutput.Y, priorOutput.Z);
   }
 
   //Returns the origin of the Model coordinate system
@@ -74,6 +75,17 @@ class Section {
   getModelPlane() {
     return new Matrix();
   }
+  getParameter = function (parameterName, defaultValue = undefined) {
+    let parameterArray = [];
+    for (let i of parameterArray) {
+      if (i === parameterName) {
+        return parameterArray[i];
+      }
+    }
+    let parameterVlaue = { [parameterName]: `${defaultValue}` };
+    parameterArray.push(parameterVlaue);
+    return defaultValue ? defaultValue : "";
+  };
 }
 
 global.Section = Section;

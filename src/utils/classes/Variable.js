@@ -30,7 +30,7 @@ class Variable {
       return "";
     }
 
-    let previousVariableValue = 1; // temporary fixed variable
+    let previousVariableValue; // temporary fixed variable
 
     if (this.prefix === "X") {
       //compare the previous X variable value
@@ -55,9 +55,12 @@ class Variable {
     }
 
     let decimalPlaces = this.Format.decimals;
-    let result = previousVariableValue
-      ? previousVariableValue.toFixed(decimalPlaces)
-      : 1; //sending default value for now
+    let result;
+    if (previousVariableValue) {
+      result = previousVariableValue.toFixed(decimalPlaces);
+    } else {
+      return;
+    }
 
     result = `${this.prefix}${result} `;
     return result;

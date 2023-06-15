@@ -256,6 +256,7 @@ class MachineConfiguration {
 global.FEED_INVERSE_TIME = 1;
 global.FEED_DPM = 1;
 global.FEED_FPM = 1;
+global.INVERSE_MINUTES = 1;
 
 global.clamp = function (min, value, max) {
   return Math.min(Math.max(value, min), max);

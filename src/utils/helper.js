@@ -252,10 +252,6 @@ global.setMachineConfiguration = function (machineConfig) {
 };
 
 global.getProperty = function (propertyName, defaultValue = undefined) {
-  // prperty has to be defined
-  // if (propertyName === "sequenceNumberStart" || "showSequenceNumbers") {
-  //   return sequenceNumber;
-  // }
   for (let key in properties) {
     if (key === propertyName) {
       return properties[key].value;
@@ -308,16 +304,13 @@ global.getNumberOfSections = function () {
   return matches ? matches : 0;
 };
 
-// let properties;
-// global.getPropertyValues = function (value) {
-//   properties = value;
-// };
-
 global.setProperty = function (propertyName, value) {
   if (properties[propertyName]) {
     let updatedProperty = properties[propertyName];
   }
 };
+
+global.OPTIMIZE_AXIS = 1; // notdefined how this works
 
 module.exports = {
   setCodePage,

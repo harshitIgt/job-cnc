@@ -45,7 +45,6 @@ global.createModal = function (specifiers, format = undefined) {
 };
 
 // writes word in  nc file
-let i = 0;
 global.writeWords = function (...args) {
   let wordString;
   if (args[0] == "/") {
@@ -311,8 +310,7 @@ global.getCircularPlane = function () {
 global.PLANE_XY = 1; // ND
 //Returns the string id for the specified command (ND)
 global.getCommandStringId = function (command) {
-  if (command <= 5) return COMMAND_STOP_SPINDLE; // temporarily fix
-  return Math.floor(Math.random() * 9000 + 9000);
+  return `COMMAND_STOP_SPINDLE`; // temporarily fix
 };
 
 //Called to invoke onRapid5D in the post engine. (ND)
@@ -352,6 +350,9 @@ global.ENABLE_WCS = 1; // dont know how will it work
 
 //cycle
 global.cycle = 30; // dont know how will it work
+global.cycle = {
+  depth: 10,
+}; // dont know how will it work
 
 //mode
 global.COOLANT_FLOOD = "COOLANT_FLOOD";

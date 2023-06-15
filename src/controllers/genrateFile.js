@@ -23,7 +23,7 @@ const functions = async function (req, res) {
     let resultString =
       `require("./src/utils/index")\nconst Vector = require("./src/utils/classes/Vector");\n` +
       functionCode;
-    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine,onCommand,onLinear5D,onPassThrough,onReturnFromSafeRetractPosition,onComment,onRadiusCompensation ,onMoveToSafeRetractPosition}`;
+    resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine,onCommand,onLinear5D,onPassThrough,onReturnFromSafeRetractPosition,onComment,onRadiusCompensation,onRewindMachineEntry  ,onMoveToSafeRetractPosition}`;
     file.write(resultString);
 
     setTimeout(() => {
@@ -31,9 +31,9 @@ const functions = async function (req, res) {
       res.status(StatusCodes.OK).render("index.ejs", { err });
     }, 3500);
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     let err = error.message;
-    res.status(StatusCodes.BAD_REQUEST).render({ err });
+    //res.status(StatusCodes.BAD_REQUEST).render({ err });
   }
 };
 

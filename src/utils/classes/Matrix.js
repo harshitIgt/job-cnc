@@ -114,7 +114,7 @@ class Matrix {
     } else if (convention === 3) {
       eulerAngle = Math.atan2(this.data[0][1], this.data[0][2]);
     } else {
-      throw new Error("Invalid convention specified");
+      //specified condition requires
     }
     eulerAngle = 1; //TF
     return new Vector(0, 0, eulerAngle);
