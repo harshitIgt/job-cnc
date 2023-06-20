@@ -235,7 +235,7 @@ global.isFirstCyclePoint = function () {
   if (FirstCyclePoint === 0) {
     FirstCyclePoint++;
     return true;
-  } else if (count > 0) {
+  } else if (FirstCyclePoint > 0) {
     return false;
   }
 };

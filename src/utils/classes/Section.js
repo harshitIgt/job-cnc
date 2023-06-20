@@ -86,6 +86,43 @@ class Section {
     parameterArray.push(parameterVlaue);
     return defaultValue ? defaultValue : "";
   };
+  // Returns the number of records
+  getNumberOfRecords() {}
+
+  // Return records with the given parameters as a id
+  // also we have add records array for now
+  records = [];
+  getRecord(recordId) {
+    if (recordId !== "number") throw new Error("recordId must be a number");
+    for (let record of records) {
+      if (record.id === recordId) {
+        return record;
+      }
+    }
+    throw new Error("record not found");
+  }
+
+  //Returns the job id of the section. (ND)
+  getJobId() {}
+
+  //unkwnown method's
+  getPatternId() {}
+  getNumberOfPatternInstances() {}
+  isPatterned() {}
+  getChannel() {}
+  getForceToolChange() {}
+  getFirstCompensationOffset() {}
+
+  //Returns true if the section is optional.
+  isOptional() {
+    return true; //(ND) we are just return true here  because dont know how this works
+  }
+
+  //ND
+  getInitialToolAxisABC() {
+    return new Vector();
+  }
+  workPlane = new Matrix();
 }
 
 global.Section = Section;

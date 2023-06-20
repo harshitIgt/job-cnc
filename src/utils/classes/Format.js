@@ -76,24 +76,70 @@ class Format {
   //Returns the resulting value for the specified value. .getResultingValue(123.1234); // returns 123.123
   getResultingValue(value) {
     if (typeof value !== "number") {
-      throw new Error("please provide a number");
+      throw new Error("getResultingValue accepts parameter as a number");
     }
-    let decimalPlaces = this.decimals;
-    let result = value.toFixed(decimalPlaces);
-    return result;
+    let resultingValue = value;
+
+    // Apply decimal precision
+    resultingValue = parseFloat(resultingValue.toFixed(this.decimals));
+
+    // Trim trailing zeros if required
+    if (this.trim && resultingValue % 1 === 0) {
+      resultingValue = parseInt(resultingValue);
+    }
+
+    // Apply force sign if required
+    if (this.forceSign && resultingValue !== 0) {
+      resultingValue = Math.sign(resultingValue) + resultingValue;
+    }
+
+    return resultingValue;
   }
 
-  //pending
-  getError() {}
+  //Returns the error for the specified value.
+  getError(value) {
+    if (typeof value !== "number") {
+      throw new Error("getError accepts parameter as a number");
+    }
+    const formattedValue = parseFloat(value.toFixed(this.decimals));
 
-  //pending
-  isSignificant() {}
+    if (this.forceSign) {
+      // Apply force sign
+      const sign = Math.sign(formattedValue);
+      return sign === 0
+        ? -formattedValue
+        : sign * (1 / Math.pow(10, this.decimals));
+    } else {
+      // No force sign
+      return formattedValue - value;
+    }
+  }
 
-  //pending
-  areDifferent() {}
+  //Returns true if the specified value would be non-zero when formatted
+  isSignificant(value) {
+    if (typeof value !== "number") {
+      throw new Error("isSignificant accepts parameter as a number");
+    }
+    const formattedValue = parseFloat(value.toFixed(this.decimals));
+    return formattedValue !== 0;
+  }
 
-  //pending
-  getMinimumValue() {}
+  //Returns true if the specified values are different when formatted.
+  areDifferent(a, b) {
+    if (typeof a === "number" && typeof b === "number") {
+      const formattedA = parseFloat(a.toFixed(this.decimals));
+      const formattedB = parseFloat(b.toFixed(this.decimals));
+      return formattedA !== formattedB;
+    } else {
+      throw new Error("areDifferent accepts parameters as numbers");
+    }
+  }
+
+  //Returns the minimum epsilon value.
+  getMinimumValue() {
+    const epsilon = 1 / Math.pow(10, this.decimals);
+    return epsilon;
+  }
 }
 
 global.Format = Format;

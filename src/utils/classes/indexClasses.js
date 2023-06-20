@@ -8,6 +8,9 @@ const Vector = require("./Variable");
 const Section = require("./Section");
 const Tool = require("./tool");
 const ToolTable = require("./ToolTable");
+const Record = require("./Record");
+const ModalGroup = require("./ModalGroup");
+const Range = require("./Range");
 
 module.exports = {
   Section,
@@ -20,4 +23,7 @@ module.exports = {
   Format,
   Tool,
   ToolTable,
+  Record,
+  ModalGroup,
+  Range,
 };

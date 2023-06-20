@@ -10,6 +10,8 @@ const Variable = require("./Variable");
 const ToolTable = require("./ToolTable");
 const Vector = require("./Vector");
 const Tool = require("./tool");
+const ModalGroup = require("./ModalGroup");
+const Matrix = require("./Matrix");
 
 //property will run only inside the onSection() and onSectionEnd() functions
 global.currentSection = new Section();
@@ -244,7 +246,7 @@ global.invokeOnRapid = function (x, y, z) {
 };
 
 // there are multiple types of cycleType but for testing adding one cycle
-global.cycleType = "probing - x";
+global.cycleType = "probing-x";
 
 //change (M06). (Not Sure)
 global.COMMAND_LOAD_TOOL = 6;
@@ -354,6 +356,52 @@ global.cycle = {
   depth: 10,
 }; // dont know how will it work
 
+// error message
+global.error = function (msg) {
+  throw new Error(msg);
+};
+
+//
+global.createModalGroup = function (specifiers, groups, format) {
+  return new ModalGroup(specifiers, groups, format);
+};
+
+//Returns a new string with the named substrings of the first argument substituted by the specified arguments. This method supports up to 16 arguments(ND)
+global.subst = function (template, ...args) {
+  let result = template;
+
+  if (args.length > 16) {
+    throw new Error("arguments must less the 16");
+  }
+
+  args.forEach((arg, index) => {
+    const placeholder = "%" + (index + 1);
+    result = result.replace(placeholder, arg);
+  });
+
+  return result;
+};
+
+//ND
+global.cancelTransformation = function () {
+  return;
+};
+
+//ND
+global.isSpiral = function () {
+  return false;
+};
+
+//ND
+global.onImpliedCommand = function (command) {
+  return;
+};
+
+//ND
+global.getRotation = function () {
+  return new Matrix();
+};
+
 //mode
 global.COOLANT_FLOOD = "COOLANT_FLOOD";
 global.COOLANT_MIST = "COOLANT_MIST";
@@ -364,6 +412,8 @@ global.COOLANT_SUCTION = "COOLANT_SUCTION";
 global.COOLANT_FLOOD_MIST = "COOLANT_FLOOD_MIST";
 global.COOLANT_FLOOD_THROUGH_TOOL = "COOLANT_FLOOD_THROUGH_TOOL";
 global.COOLANT_OFF = "COOLANT_OFF";
+global.FEED_PER_REVOLUTION = 1; //ND
+global.COMMAND_END = 1;
 
 module.exports = {
   currentSection,
