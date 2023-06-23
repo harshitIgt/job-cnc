@@ -4924,5 +4924,10 @@ function setProbeAngleMethod() {
   }
   probeVariables.outputRotationCodes = true;
 }
+
+function onParameter(param, value) {
+  onParameters(param, value);
+}
+
 // <<<<< INCLUDED FROM include_files/setProbeAngleMethod.cpi
-module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine,onCommand,onLinear5D,onPassThrough,onReturnFromSafeRetractPosition,onComment,onRadiusCompensation,onRewindMachineEntry  ,onMoveToSafeRetractPosition}
+module.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine,onCommand,onLinear5D,onPassThrough,onReturnFromSafeRetractPosition,onComment,onRadiusCompensation,onRewindMachineEntry  ,onMoveToSafeRetractPosition, onParameter}

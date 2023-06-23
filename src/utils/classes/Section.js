@@ -55,7 +55,7 @@ class Section {
 
   //Returns the origin of the Model coordinate system
   getModelOrigin() {
-    return { x: priorOutput.X, y: priorOutput.Y, z: priorOutput.Z }; // ND
+    return new Vector(priorOutput.X, priorOutput.Y, priorOutput.Z); // ND
   }
 
   //Returns true if the section has any cycle.
@@ -112,6 +112,8 @@ class Section {
   getChannel() {}
   getForceToolChange() {}
   getFirstCompensationOffset() {}
+  strategy = "probe";
+  probeWorkOffset = 1;
 
   //Returns true if the section is optional.
   isOptional() {

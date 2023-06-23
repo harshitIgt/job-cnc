@@ -37,11 +37,13 @@ global.writeBlock = function (data) {
   fs.appendFile(filePath, data + "\n", (err) => {
     if (err) throw err;
   });
+  console.log(data + "\n");
 };
 global.writeln = function (data) {
   fs.appendFile(filePath, data + "\n", (err) => {
     if (err) throw err;
   });
+  console.log(data + "\n");
 };
 
 global.onLinear = function () {

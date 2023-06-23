@@ -61,7 +61,7 @@ global.writeWords = function (...args) {
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
-  //console.log(wordString);
+  console.log(wordString);
 };
 
 // writes multiple word's in  nc file
@@ -70,7 +70,7 @@ global.writeWords2 = function (...args) {
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
-  //console.log(wordString);
+  console.log(wordString);
 };
 
 // it will return new variable
@@ -93,32 +93,6 @@ global.isNewWorkPlane = function (Section) {
 global.isFirstSection = function () {
   return true; // write now we assume erevry section is first section but we will corrent the logic
 };
-
-//storing the parameters value in the array and getParameter function is updating the parameter's
-let parameterArray = [];
-global.getParameter = function (parameterName, defaultValue = undefined) {
-  for (let i of parameterArray) {
-    if (i === parameterName) {
-      return parameterArray[i];
-    }
-  }
-  let parameterVlaue = { [parameterName]: `${defaultValue}` };
-  parameterArray.push(parameterVlaue);
-  return defaultValue ? defaultValue : "";
-};
-
-//return true if parameter is present else return false
-global.hasParameter = function (parameterName) {
-  const foundKey = Object.keys(parameterArray).find(
-    (key) => key === parameterName
-  );
-  if (foundKey) return true;
-  else return false;
-};
-
-//need to check
-global.TOOL_PROBE = 1;
-global.spindleSpeed = 1;
 
 // not implemented
 global.isDrillingCycle = function () {
@@ -248,19 +222,6 @@ global.invokeOnRapid = function (x, y, z) {
 // there are multiple types of cycleType but for testing adding one cycle
 global.cycleType = "probing-x";
 
-//change (M06). (Not Sure)
-global.COMMAND_LOAD_TOOL = 6;
-global.COMMAND_COOLANT_OFF = 9;
-global.COMMAND_COOLANT_ON = 8;
-global.COMMAND_STOP = 0;
-global.COMMAND_OPTIONAL_STOP = 1;
-global.COMMAND_START_SPINDLE = 3; //right now fixed
-global.COMMAND_START_CHIP_TRANSPORT = 0;
-global.COMMAND_UNLOCK_MULTI_AXIS = 0;
-global.OPTIMIZE_NONE = 1; // ND
-global.COMMAND_STOP_SPINDLE = 5;
-global.COMMAND_COOLANT_OFF = 9;
-
 //ND
 global.radiusCompensation = 1;
 
@@ -309,7 +270,6 @@ global.isFullCircle = function () {
 global.getCircularPlane = function () {
   return 1;
 };
-global.PLANE_XY = 1; // ND
 //Returns the string id for the specified command (ND)
 global.getCommandStringId = function (command) {
   return `COMMAND_STOP_SPINDLE`; // temporarily fix
@@ -340,6 +300,32 @@ global.CAPABILITY_SETUP_SHEET = 8;
 global.CAPABILITY_INTERMEDIATE = 16;
 global.CAPABILITY_CASCADING = 32;
 global.CAPABILITY_MACHINE_SIMULATION = 64;
+global.COMMAND_LOAD_TOOL = 6;
+global.COMMAND_COOLANT_OFF = 9;
+global.COMMAND_COOLANT_ON = 8;
+global.COMMAND_STOP = 0;
+global.COMMAND_OPTIONAL_STOP = 1;
+global.COMMAND_START_SPINDLE = 3;
+global.COMMAND_START_CHIP_TRANSPORT = 0;
+global.COMMAND_UNLOCK_MULTI_AXIS = 0;
+global.OPTIMIZE_NONE = 1;
+global.COMMAND_STOP_SPINDLE = 5;
+global.COMMAND_COOLANT_OFF = 9;
+global.PLANE_XY = 1;
+global.TOOL_PROBE = 1;
+global.spindleSpeed = 1;
+global.COOLANT_FLOOD = "COOLANT_FLOOD";
+global.COOLANT_MIST = "COOLANT_MIST";
+global.COOLANT_THROUGH_TOOL = "COOLANT_THROUGH_TOOL";
+global.COOLANT_AIR = "COOLANT_AIR";
+global.COOLANT_AIR_THROUGH_TOOL = "COOLANT_AIR_THROUGH_TOOL";
+global.COOLANT_SUCTION = "COOLANT_SUCTION";
+global.COOLANT_FLOOD_MIST = "COOLANT_FLOOD_MIST";
+global.COOLANT_FLOOD_THROUGH_TOOL = "COOLANT_FLOOD_THROUGH_TOOL";
+global.COOLANT_OFF = "COOLANT_OFF";
+global.FEED_PER_REVOLUTION = 1; //ND
+global.COMMAND_END = 1;
+global.ENABLE_WCS = 1;
 
 // default unit IN
 global.unit = `IN`;
@@ -347,21 +333,40 @@ global.DEG = `DEG`;
 global.description = "FANUC";
 global.vendor = "Fanuc";
 
-//
-global.ENABLE_WCS = 1; // dont know how will it work
-
-//cycle
+// define global variables and we can use it using on parameter functions
 global.cycle = 30; // dont know how will it work
 global.cycle = {
-  depth: 10,
-}; // dont know how will it work
+  accumulatedDepth: 5,
+  backBoreDistance: 2,
+  bottom: 10,
+  breakThroughDistance: 3,
+  breakThroughFeedRate: 100,
+  breakThroughSpindleSpeed: 2000,
+  chipBreakDistance: 1,
+  clearance: 15,
+  compensation: "control",
+  compensationShiftOrientation: "shiftOrientationValue",
+  depth: 8,
+  diameter: 6,
+  direction: "climb",
+  dwell: 2,
+  dwellDepth: 4,
+  feedrate: 50,
+  incrementalDepth: 1,
+  incrementalDepthReduction: 0.5,
+  minimumIncrementalDepth: 0.2,
+  numberOfSteps: 4,
+  probeClearance: 10,
+  probeOvertravel: 10,
+};
+
+global.getCircularSweep = function () {};
 
 // error message
 global.error = function (msg) {
   throw new Error(msg);
 };
 
-//
 global.createModalGroup = function (specifiers, groups, format) {
   return new ModalGroup(specifiers, groups, format);
 };
@@ -402,18 +407,45 @@ global.getRotation = function () {
   return new Matrix();
 };
 
-//mode
-global.COOLANT_FLOOD = "COOLANT_FLOOD";
-global.COOLANT_MIST = "COOLANT_MIST";
-global.COOLANT_THROUGH_TOOL = "COOLANT_THROUGH_TOOL";
-global.COOLANT_AIR = "COOLANT_AIR";
-global.COOLANT_AIR_THROUGH_TOOL = "COOLANT_AIR_THROUGH_TOOL";
-global.COOLANT_SUCTION = "COOLANT_SUCTION";
-global.COOLANT_FLOOD_MIST = "COOLANT_FLOOD_MIST";
-global.COOLANT_FLOOD_THROUGH_TOOL = "COOLANT_FLOOD_THROUGH_TOOL";
-global.COOLANT_OFF = "COOLANT_OFF";
-global.FEED_PER_REVOLUTION = 1; //ND
-global.COMMAND_END = 1;
+//ND
+global.hasNextSection = function () {
+  return false;
+};
+
+// just own logic
+let parameterArray = [];
+global.onParameters = function (param, value) {
+  if (param && value) {
+    if (cycle.hasOwnProperty(param)) {
+      cycle[param] = value;
+    } else {
+      // eval(`${param} = ${value}`); // this method is not recomended
+      let parameterVlaue = { [param]: `${value}` };
+      parameterArray.push(parameterVlaue);
+    }
+  }
+};
+
+//storing the parameters value in the array and getParameter function is updating the parameter's
+global.getParameter = function (parameterName, defaultValue = undefined) {
+  for (let i of parameterArray) {
+    if (i === parameterName) {
+      return parameterArray[i];
+    }
+  }
+  let parameterVlaue = { [parameterName]: `${defaultValue}` };
+  parameterArray.push(parameterVlaue);
+  return defaultValue ? defaultValue : "";
+};
+
+//return true if parameter is present else return false
+global.hasParameter = function (parameterName) {
+  const foundKey = Object.keys(parameterArray).find(
+    (key) => key === parameterName
+  );
+  if (foundKey) return true;
+  else return false;
+};
 
 module.exports = {
   currentSection,

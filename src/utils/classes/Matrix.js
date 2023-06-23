@@ -17,7 +17,7 @@ class Matrix {
       ];
     } else if (args.length === 1) {
       // Constructor for the scale matrix
-      const scale = args[0][1]; //fix it is showing array, so i just pick array middle indexing
+      const scale = typeof args[0][1] === "number" ? args[0][1] : 1; //fix it is showing array, so i just pick array middle indexing
       this.data = [
         [scale, 0, 0],
         [0, scale, 0],

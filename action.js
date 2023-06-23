@@ -1,5 +1,5 @@
 const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, onRadiusCompensation, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes,onCommand,onLinear5D,onPassThrough, onRewindMachineEntry,onMoveToSafeRetractPosition,onReturnFromSafeRetractPosition,onComment} = require('./functions.js')
+             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, onRadiusCompensation, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes,onCommand,onLinear5D,onPassThrough, onRewindMachineEntry,onMoveToSafeRetractPosition,onReturnFromSafeRetractPosition,onComment, onParameter} = require('./functions.js')
 
 
 onOpen()    
@@ -57,6 +57,13 @@ onLinear(1.89999993391863, 0, 0.19685039370078738, 0.04000000127657192)
 onSectionEnd()
 onSection()
 onRapid(-1.1258330307607576, 0.6500000090110959, 0.5999999909889041)
+onParameter('clearance', 0.19999999699630136)
+onParameter('retract', -0.04999999924907534)
+onParameter('stock', -0.2499999962453767)
+onParameter('depth', 0.21008607909435362)
+onParameter('feedrate', 40)
+onParameter('retractFeedrate', 40)
+onParameter('plungeFeedrate', 40)
 onCycle()
 onCyclePoint(-1.1258330307607576, 0.6500000090110959, -0.46008605656661383)
 onCyclePoint(-1.1258330307607576, -0.6500000090110959, -0.46008605656661383)
