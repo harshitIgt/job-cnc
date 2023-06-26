@@ -1,7 +1,6 @@
 const {onOpen, onLinear, onClose, onSection, onSectionEnd,
              onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, onRadiusCompensation, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes,onCommand,onLinear5D,onPassThrough, onRewindMachineEntry,onMoveToSafeRetractPosition,onReturnFromSafeRetractPosition,onComment, onParameter} = require('./functions.js')
 
-
 onOpen()    
 onSection()
 onRapid5D(1,2,3,4,5,6)
