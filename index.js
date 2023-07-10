@@ -1,26 +1,118 @@
-const express = require('express')
-const bodyParser = require("body-parser")
-const app = express()
-const path = require('path')
-const file = require('./src/routes/genrateFile')
-const ejs = require('ejs')
+const fs = require("fs");
+const path = require("path");
 
+const readline = require("readline");
 
-// app.use(express.json())
-// app.use(express.text())
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json());
+const {
+  functions,
+  actions,
+  sendFile,
+  clearprogramOutput,
+  deleteFileCache,
+} = require("./src/controllers/genrateFile");
 
-app.set('views',path.join(__dirname, "views"))
-app.set('view engine', 'ejs')
+// Setup Auto Counfiguration
+(function () {
+  const requiredPackages = [
+    "child_process",
+    "vm-browserify",
+    "readline",
+    "vm2",
+  ];
 
-app.get('/', (req,res) => {
-    let err = undefined
-    res.render('index.ejs',{err})
-})
-app.use(file)
+  function arePackagesInstalled() {
+    try {
+      const packageJson = require("./package.json");
+      const installedPackages = Object.keys(packageJson.dependencies || {});
+      return requiredPackages.every((pkg) => installedPackages.includes(pkg));
+    } catch (error) {
+      return false;
+    }
+  }
 
-const PORT = 4800
-app.listen(PORT, ()=>{
-    console.log(`App is working on port: ${PORT}`)
-})
+  function runApplication() {
+    console.log("Application is running...");
+  }
+
+  if (arePackagesInstalled()) {
+    runApplication();
+  } else {
+    console.log("Required npm packages are not found. Installing...");
+    require("./installPackages");
+    if (arePackagesInstalled()) {
+      console.log("Packages installed successfully.");
+      runApplication();
+    } else {
+      console.error("Failed to install required npm packages.");
+    }
+  }
+})();
+
+// CLI Execution
+(function () {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  let isTextInputMode = false;
+
+  function processInput(input) {
+    if (input === "exit") {
+      sendFile();
+      console.log(
+        "file downloaded successfully Please check your Downloads directory"
+      );
+    } else if (input === "1") {
+      rl.question("Enter the file path: ", (filePath) => {
+        uploadFile(filePath);
+      });
+    } else if (input === "2") {
+      deleteFileCache();
+      clearprogramOutput();
+      isTextInputMode = true;
+      console.log('Enter text (Press "exit" to stop):');
+    } else if (input === "close") {
+      rl.close();
+    } else if (isTextInputMode) {
+      processText(input);
+    } else {
+      console.log(`You entered: ${input}`);
+      rl.prompt(); // Display the prompt for the next input
+    }
+  }
+
+  function uploadFile(filePath) {
+    if (!fs.existsSync(filePath)) {
+      console.log("File does not exist!");
+      rl.prompt();
+      return;
+    }
+
+    functions(filePath);
+
+    rl.prompt();
+  }
+
+  function processText(text) {
+    if (text === "exit") {
+      isTextInputMode = false;
+      rl.prompt();
+    } else {
+      actions(text);
+
+      rl.prompt(); // Display the prompt for the next input
+    }
+  }
+
+  rl.prompt();
+
+  rl.on("line", (input) => {
+    processInput(input.trim());
+  });
+
+  rl.on("close", () => {
+    console.log("Exiting the application");
+    process.exit(0);
+  });
+})();

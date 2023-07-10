@@ -1,8 +1,13 @@
 const fs = require("fs");
+
 const path = require("path");
 const { format } = require("path");
-const filePath = "output.nc";
-const stream = fs.createReadStream("action.js");
+
+const { chekFileLocation } = require("./comman");
+
+const programOutput = chekFileLocation("C:/ProgramData/job-cnc/output.nc");
+const userActions = chekFileLocation("C:/ProgramData/job-cnc/action.js");
+const stream = fs.createReadStream("C:/ProgramData/job-cnc/action.js");
 
 global.defaultFeedRate = 0;
 global.defaultSpindleSpeed = 0;
@@ -34,16 +39,16 @@ global.setCodePage = function (pageType) {
 };
 
 global.writeBlock = function (data) {
-  fs.appendFile(filePath, data + "\n", (err) => {
+  fs.appendFile(programOutput, data + "\n", (err) => {
     if (err) throw err;
   });
-  console.log(data + "\n");
+  //console.log(data + "\n");
 };
 global.writeln = function (data) {
-  fs.appendFile(filePath, data + "\n", (err) => {
+  fs.appendFile(programOutput, data + "\n", (err) => {
     if (err) throw err;
   });
-  console.log(data + "\n");
+  //console.log(data + "\n");
 };
 
 global.onLinear = function () {
@@ -295,7 +300,7 @@ global.filterText = function (text, keep) {
 
 // find the total number of sections in action file
 global.getNumberOfSections = function () {
-  let actinsFileLocation = path.join(__dirname, "../../action.js");
+  let actinsFileLocation = userActions;
   let actions = "";
   fs.readFile(actinsFileLocation, "utf8", function (err, data) {
     if (err) throw err;

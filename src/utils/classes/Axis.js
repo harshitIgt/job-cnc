@@ -5,12 +5,18 @@ const Matrix = require("./Matrix");
 class Axis {
   constructor(...args) {
     if (args.length === 0) {
-      (this.X = 0), (this.Y = 0), (this.Z = 0), (this._table = false);
+      //  (this.X = 0), (this.Y = 0), (this.Z = 0), (this._table = false);
+      this._table = false;
+      this._axis = new Vector();
+      this._offset = new Vector();
+      this._coordinate = 1; //not fix
+      this._range = new Range();
     } else if (args.length === 4) {
       this._table = _table;
       this._axis = _axis;
       this._offset = _offset;
       this._coordinate = _coordinate;
+      this.range = new Range();
     } else if (args.length === 5) {
       this._table = _table;
       this._axis = _axis;
@@ -247,9 +253,9 @@ class Axis {
     const referencePoint = { x: 0, y: 0, z: 0 }; // Define your reference point here
 
     const squaredDistance =
-      Math.pow(this.X - referencePoint.x, 2) +
-      Math.pow(this.Y - referencePoint.y, 2) +
-      Math.pow(this.Z - referencePoint.z, 2);
+      Math.pow(this._axis.x - referencePoint.x, 2) +
+      Math.pow(this._axis.y - referencePoint.y, 2) +
+      Math.pow(this._axis.z - referencePoint.z, 2);
 
     const homePosition = Math.sqrt(squaredDistance);
 

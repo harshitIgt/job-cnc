@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const filePath = "output.nc";
+const filePath = "C:/ProgramData/job-cnc/output.nc";
 
 const Section = require("./Section");
 const { priorOutput } = require("../helper");
@@ -12,6 +12,7 @@ const Vector = require("./Vector");
 const Tool = require("./tool");
 const ModalGroup = require("./ModalGroup");
 const Matrix = require("./Matrix");
+const MachineConfiguration = require("./MachineConfiguration");
 
 //property will run only inside the onSection() and onSectionEnd() functions
 global.currentSection = new Section();
@@ -61,7 +62,7 @@ global.writeWords = function (...args) {
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
-  console.log(wordString);
+  //console.log(wordString);
 };
 
 // writes multiple word's in  nc file
@@ -70,7 +71,7 @@ global.writeWords2 = function (...args) {
   fs.appendFile(filePath, wordString + "\n", (err) => {
     if (err) throw err;
   });
-  console.log(wordString);
+  //console.log(wordString);
 };
 
 // it will return new variable
@@ -192,6 +193,17 @@ global.getGlobalParameter = function (value, defaultValue = "") {
 
   // Return the defaultValue if the parameter is not defined
   return defaultValue;
+};
+
+global.getGlobalPosition = function (p) {
+  if (!(p instanceof Vector)) {
+    throw new Error("getGlobalPosition accepts Vector");
+  }
+  let a = p.x + 100;
+  let b = p.y + 50;
+  let c = p.z + 25; // dummy values
+
+  return new Vector(a, b, c);
 };
 
 //Returns true if the current section is the last section. (right now we are assuming current section is the last section is the last section)
@@ -446,6 +458,9 @@ global.hasParameter = function (parameterName) {
   if (foundKey) return true;
   else return false;
 };
+global.getMachineConfiguration = function () {
+  return new MachineConfiguration(); //temporayr fix
+};
 
 module.exports = {
   currentSection,
@@ -474,4 +489,5 @@ module.exports = {
   COMMAND_STOP,
   COMMAND_OPTIONAL_STOP,
   COMMAND_START_SPINDLE,
+  getMachineConfiguration,
 };

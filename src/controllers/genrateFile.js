@@ -1,51 +1,42 @@
 const fs = require("fs");
 const path = require("path");
-const { StatusCodes } = require("http-status-codes");
+const os = require("os");
 
 const { NodeVM } = require("vm2");
 
-const functions = async function (req, res) {
-  try {
-    let functionCode;
-    if (req.file) {
-      functionCode = req.file.buffer.toString("utf8");
-    } else {
-      functionCode = req.body;
-    }
-    const funcFile = `functions.js`;
+const { chekFileLocation } = require("../utils/comman");
 
-    fs.truncate(funcFile, 0, function (err) {
+const userActions = chekFileLocation("C:/ProgramData/job-cnc/action.js");
+const programOutput = chekFileLocation("C:/ProgramData/job-cnc/output.nc");
+const userCpsFunctions = chekFileLocation(
+  "C:/ProgramData/job-cnc/functions.js"
+);
+
+const functions = async function (filePath) {
+  try {
+    let functionCode = fs.readFileSync(filePath, "utf8"); // this is Sunchronously we have to convert Asynchronous
+
+    fs.truncate(userCpsFunctions, 0, function (err) {
       if (err) throw err;
     });
+    clearprogramOutput();
 
-    const file = fs.createWriteStream(funcFile);
+    const file = fs.createWriteStream(userCpsFunctions);
 
-    let resultString =
-      `require("./src/utils/index")\nconst Vector = require("./src/utils/classes/Vector");\n` +
-      functionCode;
+    let resultString = functionCode;
     resultString += `\nmodule.exports = { onOpen, onLinear, onClose, onSection, onSectionEnd, onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint,onDwell,onRotateAxes,onRapid5D,onSpindleSpeed,defineMachine,onCommand,onLinear5D,onPassThrough,onReturnFromSafeRetractPosition,onComment,onRadiusCompensation,onRewindMachineEntry  ,onMoveToSafeRetractPosition, onParameter}`;
     file.write(resultString);
 
-    setTimeout(() => {
-      let err = `file uploading successfully`;
-      res.status(StatusCodes.OK).render("index.ejs", { err });
-    }, 3500);
+    console.log("file uploading successfully");
   } catch (error) {
-    //console.log(error);
-    let err = error.message;
-    //res.status(StatusCodes.BAD_REQUEST).render({ err });
+    console.log(error);
   }
 };
 
-const actions = async function (req, res) {
+const actions = async function (text) {
   try {
-    const actionCode = req.body.message;
-
-    const filename = "action.js";
-    const outputFile = path.join(__dirname, "../../output.nc");
-    const funcFile = path.join(__dirname, "../../functions.js");
-    const srcFile = path.join(__dirname, "../../action.js");
-    let file = fs.readFileSync(funcFile, "utf8");
+    const actionCode = text;
+    let file = fs.readFileSync(userCpsFunctions, "utf8");
 
     if (!file) {
       err = "Please upload file";
@@ -53,59 +44,90 @@ const actions = async function (req, res) {
       return;
     }
 
-    // change the size of the files (empty files)
-    fs.truncate(filename, 0, function (err) {
-      if (err) throw err;
-    });
-    fs.truncate("output.nc", 0, function (err) {
+    fs.truncate(userActions, 0, function (err) {
       if (err) throw err;
     });
 
-    // adding the data in the action file
     fs.appendFile(
-      filename,
+      userActions,
       `const {onOpen, onLinear, onClose, onSection, onSectionEnd,
-             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, onRadiusCompensation, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes,onCommand,onLinear5D,onPassThrough, onRewindMachineEntry,onMoveToSafeRetractPosition,onReturnFromSafeRetractPosition,onComment, onParameter} = require('./functions.js')\n\n${actionCode}`,
+             onCircular, onRapid, onCycle, onCycleEnd, onCyclePoint, onRadiusCompensation, defineMachine, onDwell,onRapid5D,onSpindleSpeed,onRotateAxes,onCommand,onLinear5D,onPassThrough, onRewindMachineEntry,onMoveToSafeRetractPosition,onReturnFromSafeRetractPosition,onComment, onParameter} = require("${userCpsFunctions}")\n\n${actionCode}`,
       (err) => {
         if (err) throw err;
       }
     );
 
-    deleteFileCache();
+    //deleteFileCache();
 
-    fs.readFile(srcFile, "utf8", (err, data) => {
+    fs.readFile(userActions, "utf8", (err, data) => {
       if (err) throw err;
 
       try {
         const vm = new NodeVM({
+          console: "inherit",
+          sandbox: {
+            postProcessor: require("../utils/index"),
+            Vector: require("../utils/classes/Vector"),
+          },
           require: {
             external: true,
             context: "host",
-            root: "./functions.js",
+            root: userCpsFunctions,
           },
         });
-        vm.run(data);
+
+        vm.run(data, "sandbox.js");
       } catch (error) {
         console.log(">>e", error);
         err = error.message;
-        res.render("index.ejs", { err });
         return;
       }
     });
-    setTimeout(() => {
-      res.status(StatusCodes.OK).sendFile(outputFile);
-    }, 4000);
   } catch (error) {
-    res.status(StatusCodes.OK).json({ error: error.message }); //sending error and server will not crash
+    console.log(error);
   }
 };
 
 function deleteFileCache() {
-  const helperPath = "../utils/helper.js";
+  const helperPath = path.join(__dirname, "../utils/helper.js");
   delete require.cache[require.resolve(helperPath)];
-
-  const filePath = "../../functions.js";
+  const filePath = userCpsFunctions;
   delete require.cache[require.resolve(filePath)];
 }
 
-module.exports = { functions, actions };
+function sendFile() {
+  //const filePath = path.join(__dirname, "../../output.nc");
+  const userActions = "output.nc";
+
+  const downloadFolder = path.join(os.homedir(), "Downloads");
+  const destinationPath = path.join(
+    downloadFolder,
+    path.basename(programOutput)
+  );
+
+  if (fs.existsSync(destinationPath)) {
+    const timestamp = Date.now();
+    const uniqueuserActions = `${path.parse(userActions).name}_${timestamp}${
+      path.parse(userActions).ext
+    }`;
+    const uniqueDestinationPath = path.join(downloadFolder, uniqueuserActions);
+
+    fs.copyFileSync(programOutput, uniqueDestinationPath);
+  } else {
+    fs.copyFileSync(programOutput, destinationPath);
+  }
+}
+
+function clearprogramOutput() {
+  fs.truncate(programOutput, 0, function (err) {
+    if (err) throw err;
+  });
+}
+
+module.exports = {
+  functions,
+  actions,
+  sendFile,
+  clearprogramOutput,
+  deleteFileCache,
+};
